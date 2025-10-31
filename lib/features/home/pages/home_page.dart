@@ -103,7 +103,25 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
+                          // Filter button
+                          GestureDetector(
+                            onTap: () {
+                              final cat = categories[selectedCategoryIndex]['title']!;
+                              context.push('/filter/$cat');
+                            },
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFFF6B35)),
+                              ),
+                              child: const Icon(Icons.tune, color: Color(0xFFFF6B35), size: 24),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           // Cart Icon
                           Container(
                             width: 50,
@@ -226,6 +244,9 @@ class _HomePageState extends State<HomePage> {
                                 setState(() {
                                   selectedCategoryIndex = index;
                                 });
+                                if (categories[index]['title'] == 'Dessert') {
+                                  context.push('/desserts-filter');
+                                }
                               },
                               child: Column(
         children: [
@@ -411,9 +432,6 @@ class _HomePageState extends State<HomePage> {
                 _buildNavItem(Icons.restaurant, false, () {}),
                 _buildNavItem(Icons.favorite_outline, false, () {}),
                 _buildNavItem(Icons.list_alt, false, () {}),
-                _buildNavItem(Icons.person_outline, false, () {
-                  Scaffold.of(context).openDrawer();
-                }),
               ],
             ),
           ),
