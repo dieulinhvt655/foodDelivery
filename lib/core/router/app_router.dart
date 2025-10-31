@@ -4,6 +4,7 @@ import '../../features/home/pages/home_page.dart';
 import '../../features/restaurant_detail/pages/restaurant_detail_page.dart';
 import '../../features/profile/pages/profile_page.dart';
 import '../../features/orders/pages/orders_page.dart';
+import '../../features/notifications/pages/notifications_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -31,6 +32,10 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsPage(),
       ),
     ],
   );

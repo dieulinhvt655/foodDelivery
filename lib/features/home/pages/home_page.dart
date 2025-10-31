@@ -7,6 +7,7 @@ import '../widgets/best_seller_card.dart';
 import '../widgets/promo_banner.dart';
 import '../widgets/recommend_card.dart';
 import '../../profile/widgets/profile_drawer.dart';
+import '../../notifications/widgets/notification_bell.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -124,23 +125,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(width: 8),
                           // Bell Icon
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: const Color(0xFFFF6B35),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.notifications_outlined,
-                              color: Color(0xFFFF6B35),
-                              size: 24,
-                            ),
-                          ),
+                          const NotificationBell(),
                           const SizedBox(width: 8),
                           // Profile Icon
                           Container(
