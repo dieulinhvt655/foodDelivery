@@ -49,10 +49,10 @@ class AppRouter {
         path: '/profile',
         builder: (context, state) => const ProfilePage(),
       ),
-      GoRoute(
-        path: '/desserts-filter',
-        builder: (context, state) => const DessertsFilterPage(),
-      ),
+      // GoRoute(
+      //   path: '/desserts-filter',
+      //   builder: (context, state) => const DessertsFilterPage(),
+      // ),
       GoRoute(
         path: '/filter/:category',
         builder: (context, state) {

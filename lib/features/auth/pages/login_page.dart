@@ -42,11 +42,11 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 70),
               const Center(
-                child: Icon(Icons.lock, size: 100, color: Color(0xFFFF6B35)),
+                child: Icon(Icons.lock, size: 50, color: Color(0xFFFF6B35)),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 10),
               const Text(
                 'Log in',
                 style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF2D2D2D)),
@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   prefixIcon: const Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -92,16 +92,16 @@ class _LoginPageState extends State<LoginPage> {
               ],
               const SizedBox(height: 10),
               SizedBox(
-                height: 50,
+                height: 60,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFF6B35),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(36)),
                   ),
                   onPressed: _isLoading ? null : () => _login(context),
                   child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Log in', style: TextStyle(fontSize: 22, color: Colors.white)),
+                    : const Text('Log in', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 18),
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFFF6B35)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                   ),
                   onPressed: () {},
                   icon: Icon(Icons.g_mobiledata, color: Color(0xFFFF6B35), size: 27),

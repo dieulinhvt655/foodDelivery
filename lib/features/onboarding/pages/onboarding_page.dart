@@ -16,20 +16,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
     OnboardingData(
       title: 'Delicious Food',
       description: 'Discover a wide range of delicious food from top restaurants near you',
-      image: '🍔',
-      color: const Color(0xFFFFE0B2),
+      image: Image.asset('assets/images/onboarding.png'),
+      color: const Color(0xFFF5F5F5),
     ),
     OnboardingData(
       title: 'Fast Delivery',
       description: 'Get your favorite food delivered quickly right to your doorstep',
-      image: '🚀',
-      color: const Color(0xFFFFCCBC),
+      image: Image.asset('assets/images/Vector.png'),
+      color: const Color(0xFFF5F5F5),
     ),
     OnboardingData(
       title: 'Easy Ordering',
       description: 'Browse, select, and order your favorite food with just a few taps',
-      image: '📱',
-      color: const Color(0xFFFFB74D),
+      image: Image.asset('assets/images/phone.png'),
+      color: const Color(0xFFF5F5F5),
     ),
   ];
 
@@ -102,11 +102,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
               color: data.color,
               shape: BoxShape.circle,
             ),
-            child: Center(
-              child: Text(
-                data.image,
-                style: const TextStyle(fontSize: 80),
-              ),
+            child: Center(child: SizedBox(
+              width: 202,
+              height: 179,
+              child: data.image,
+            ),
             ),
           ),
           const SizedBox(height: 60),
@@ -156,7 +156,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 class OnboardingData {
   final String title;
   final String description;
-  final String image;
+  final Image image;
   final Color color;
 
   OnboardingData({
