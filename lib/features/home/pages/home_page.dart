@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/home_provider.dart';
 import '../../filters/pages/category_filter_page.dart';
-import '../widgets/category_chip.dart';
 import '../widgets/best_seller_card.dart';
 import '../widgets/promo_banner.dart';
 import '../widgets/recommend_card.dart';
@@ -143,9 +142,14 @@ class _HomePageState extends State<HomePage> {
                               child: const Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6B35)),
                             ),
                           ),
+                          // Bell Icon
                           const SizedBox(width: 8),
                           // Notification
-                          Container(
+                          GestureDetector(
+                            onTap: () {
+                              context.push('/notifications');
+                            },
+                          child: Container(
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
@@ -154,11 +158,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: Icon(Icons.notifications_active_outlined, color: Color(0xFFFF6B35)),
                           ),
-                          const SizedBox(width: 5),
+                          ),
                         ],
                       ),
                     ),
-
                     // Greeting
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),

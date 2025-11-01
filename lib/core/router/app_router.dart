@@ -10,6 +10,7 @@ import '../../features/auth/pages/signup_page.dart';
 import '../../features/desserts/pages/desserts_filter_page.dart';
 import '../../features/filters/pages/category_filter_page.dart';
 import '../../features/cart/pages/cart_page.dart';
+import '../../features/notifications/pages/notifications_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -68,6 +69,10 @@ class AppRouter {
       GoRoute(
         path: '/cart',
         builder: (context, state) => const CartPage(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsPage(),
       ),
     ],
   );
