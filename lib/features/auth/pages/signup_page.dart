@@ -16,6 +16,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
@@ -26,6 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -44,6 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
         _nameController.text.trim(),
         _emailController.text.trim(),
         _passwordController.text.trim(),
+        phone: _phoneController.text.trim(),
       );
 
       if (!mounted) return;
@@ -54,7 +57,11 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
       );
     } finally {
       if (mounted) {
@@ -160,6 +167,26 @@ class _SignUpPageState extends State<SignUpPage> {
                             }
                             if (!RegExp(r'^.+@.+\..+$').hasMatch(value.trim())) {
                               return 'Enter a valid email';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      _buildLabeledField(
+                        label: 'Phone number',
+                        child: TextFormField(
+                          controller: _phoneController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.phone,
+                          decoration: _inputDecoration('(+84) 123 456 789', Icons.phone_outlined),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return null; // optional field
+                            }
+                            final trimmed = value.trim();
+                            if (trimmed.length < 6) {
+                              return 'Phone number too short';
                             }
                             return null;
                           },

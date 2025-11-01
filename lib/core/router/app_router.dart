@@ -11,6 +11,7 @@ import '../../features/desserts/pages/desserts_filter_page.dart';
 import '../../features/filters/pages/category_filter_page.dart';
 import '../../features/cart/pages/cart_page.dart';
 import '../../features/notifications/pages/notifications_page.dart';
+import '../../features/profile/pages/profile_edit_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -54,6 +55,10 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        builder: (context, state) => const ProfileEditPage(),
       ),
       // GoRoute(
       //   path: '/category_filter_page',

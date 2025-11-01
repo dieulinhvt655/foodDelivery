@@ -5,7 +5,8 @@ import 'core/theme/app_theme.dart';
 import 'core/providers/home_provider.dart';
 import 'core/providers/auth_provider.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
