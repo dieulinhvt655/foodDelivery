@@ -12,6 +12,10 @@ import '../../features/filters/pages/category_filter_page.dart';
 import '../../features/cart/pages/cart_page.dart';
 import '../../features/notifications/pages/notifications_page.dart';
 import '../../features/profile/pages/profile_edit_page.dart';
+import '../../features/profile/pages/change_password_page.dart';
+import '../../features/address/pages/address_list_page.dart';
+import '../../features/address/pages/address_form_page.dart';
+import '../../features/payment/pages/payment_methods_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -59,6 +63,22 @@ class AppRouter {
       GoRoute(
         path: '/profile/edit',
         builder: (context, state) => const ProfileEditPage(),
+      ),
+      GoRoute(
+        path: '/change-password',
+        builder: (context, state) => const ChangePasswordPage(),
+      ),
+      GoRoute(
+        path: '/addresses',
+        builder: (context, state) => const AddressListPage(),
+      ),
+      GoRoute(
+        path: '/addresses/new',
+        builder: (context, state) => const AddressFormPage(),
+      ),
+      GoRoute(
+        path: '/payment-methods',
+        builder: (context, state) => const PaymentMethodsPage(),
       ),
       // GoRoute(
       //   path: '/category_filter_page',

@@ -159,22 +159,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 ),
                 const SizedBox(height: 20),
                 _buildLabeledField(
-                  label: 'Phone number',
+                  label: 'Phone number (optional)',
                   child: TextFormField(
                     controller: _phoneController,
                     textInputAction: TextInputAction.done,
                     keyboardType: TextInputType.phone,
                     decoration: _inputDecoration('(+84) 123 456 789', Icons.phone_outlined),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return null;
-                      }
-                      final trimmed = value.trim();
-                      if (trimmed.length < 6) {
-                        return 'Phone number too short';
-                      }
-                      return null;
-                    },
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -258,4 +248,5 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 }
+
 

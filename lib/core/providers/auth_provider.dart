@@ -115,6 +115,42 @@ class AuthProvider extends ChangeNotifier {
     _currentUser = UserModel.fromAccount(updatedAccount);
     notifyListeners();
   }
+
+  Future<void> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    if (_currentAccount == null) {
+      throw Exception('User not logged in');
+    }
+
+    final trimmedCurrentPassword = currentPassword.trim();
+    final trimmedNewPassword = newPassword.trim();
+
+    if (trimmedCurrentPassword.isEmpty || trimmedNewPassword.isEmpty) {
+      throw Exception('Both current and new passwords are required');
+    }
+
+    // Verify current password
+    if (_currentAccount!.password != trimmedCurrentPassword) {
+      throw Exception('Current password is incorrect');
+    }
+
+    // Validate new password
+    if (trimmedNewPassword.length < 6) {
+      throw Exception('New password must be at least 6 characters');
+    }
+
+    // Update password
+    final updatedAccount = _currentAccount!.copyWith(
+      password: trimmedNewPassword,
+    );
+
+    await _databaseHelper.updateAccount(updatedAccount);
+
+    _currentAccount = updatedAccount;
+    notifyListeners();
+  }
 }
 
 

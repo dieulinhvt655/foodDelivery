@@ -21,11 +21,13 @@ class ProfilePage extends StatelessWidget {
         'icon': Icons.location_on_outlined,
         'title': 'Delivery Address',
         'subtitle': 'Manage saved locations',
+        'onTap': () => context.push('/addresses'),
       },
       {
         'icon': Icons.payment_outlined,
         'title': 'Payment Methods',
         'subtitle': 'Cards, wallets, and more',
+        'onTap': () => context.push('/payment-methods'),
       },
       {
         'icon': Icons.receipt_long_outlined,
@@ -33,14 +35,10 @@ class ProfilePage extends StatelessWidget {
         'subtitle': 'Review previous orders',
       },
       {
-        'icon': Icons.notifications_active_outlined,
-        'title': 'Notifications',
-        'subtitle': 'Push, email, SMS alerts',
-      },
-      {
         'icon': Icons.lock_outline,
         'title': 'Security',
-        'subtitle': 'Password, Face ID & privacy',
+        'subtitle': 'Password',
+        'onTap': () => context.push('/change-password'),
       },
       {
         'icon': Icons.help_outline,
@@ -136,15 +134,6 @@ class ProfilePage extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      email,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withOpacity(0.85),
-                      ),
-                    ),
                     if (phone != null && phone.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Text(
@@ -155,6 +144,15 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ],
+                    const SizedBox(height: 6),
+                    Text(
+                      email,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.85),
+                      ),
+                    ),
                     const SizedBox(height: 10),
                   ],
                 ),

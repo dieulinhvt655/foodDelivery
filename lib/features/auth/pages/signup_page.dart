@@ -174,22 +174,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       const SizedBox(height: 18),
                       _buildLabeledField(
-                        label: 'Phone number',
+                        label: 'Phone number (optional)',
                         child: TextFormField(
                           controller: _phoneController,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.phone,
                           decoration: _inputDecoration('(+84) 123 456 789', Icons.phone_outlined),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return null; // optional field
-                            }
-                            final trimmed = value.trim();
-                            if (trimmed.length < 6) {
-                              return 'Phone number too short';
-                            }
-                            return null;
-                          },
                         ),
                       ),
                       const SizedBox(height: 18),

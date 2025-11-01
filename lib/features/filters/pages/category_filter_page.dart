@@ -105,15 +105,9 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                   // Back
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFFF6B35)),
-                      ),
-                      child: const Icon(Icons.arrow_back, color: Color(0xFFFF6B35)),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35)),
                     ),
                   ),
                   const Spacer(),
@@ -122,44 +116,12 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D2D2D),
+                      color: Color(0xFFFFFFFF),
                     ),
                   ),
                   const Spacer(),
-                  // Cart
-                  GestureDetector(
-                    onTap: () {
-                      // Navigate to cart; fallback to orders if dedicated cart not available
-                      Navigator.of(context).pushNamed('/orders');
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFFF6B35)),
-                      ),
-                      child: const Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6B35)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Profile
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/profile');
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFFF6B35)),
-                      ),
-                      child: const Icon(Icons.person_outline, color: Color(0xFFFF6B35)),
-                    ),
-                  ),
+                  // Empty space to balance the back button
+                  const SizedBox(width: 44),
                 ],
               ),
             ),
@@ -304,40 +266,6 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                 ),
               ),
             ),
-
-            // Bottom Navigation Bar (orange rounded)
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _navIcon(Icons.home, () { Navigator.of(context).pushNamed('/home'); }),
-                      _navIcon(Icons.restaurant, () {}),
-                      _navIcon(Icons.favorite_outline, () {}),
-                      _navIcon(Icons.list_alt, () { Navigator.of(context).pushNamed('/orders'); }),
-                      _navIcon(Icons.headset_mic_outlined, () {}),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -388,17 +316,6 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
         border: Border.all(color: const Color(0xFFE0E0E0)),
       ),
       child: Text('${value.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w600)),
-    );
-  }
-
-  Widget _navIcon(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: const BoxDecoration(shape: BoxShape.circle),
-        child: Icon(icon, color: Colors.white),
-      ),
     );
   }
 
