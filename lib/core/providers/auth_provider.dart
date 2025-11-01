@@ -21,6 +21,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> register(String name, String email, String password) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      throw Exception('Missing required fields');
+    }
+    // simulate success without authenticating user immediately
+  }
+
   void logout() {
     _userId = null;
     _userName = null;
