@@ -9,11 +9,16 @@ class AuthProvider extends ChangeNotifier {
   String? get userId => _userId;
   String? get userName => _userName;
 
-  void login(String userId, String userName) {
-    _userId = userId;
-    _userName = userName;
-    _isAuthenticated = true;
-    notifyListeners();
+  Future<void> login(String email, String password) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (email.isNotEmpty && password.isNotEmpty) {
+      _userId = email;
+      _userName = email.split('@').first;
+      _isAuthenticated = true;
+      notifyListeners();
+    } else {
+      throw Exception('Invalid credentials');
+    }
   }
 
   void logout() {

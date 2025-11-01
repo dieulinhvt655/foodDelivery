@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/home_provider.dart';
+import '../../filters/pages/category_filter_page.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/best_seller_card.dart';
 import '../widgets/promo_banner.dart';
@@ -17,8 +18,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedCategoryIndex = 0;
-  
+
   final List<Map<String, String>> categories = [
     {'title': 'Snacks', 'icon': 'assets/icons/chip-home/Snacks.svg'},
     {'title': 'Meal', 'icon': 'assets/icons/chip-home/Meals.svg'},
@@ -50,13 +52,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: const ProfileDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-          children: [
-              // Yellow Header Section
+            children: [
+              // Header section
               Container(
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFB800),
@@ -67,86 +70,96 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Column(
                   children: [
-                    // Search Bar
+                    // Search bar
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Row(
                         children: [
                           Expanded(
                             child: Container(
-                              height: 50,
+                              height: 40,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(25),
                               ),
-                              child: const TextField(
+                              child: TextField(
                                 decoration: InputDecoration(
                                   hintText: 'Search',
-                                  hintStyle: TextStyle(
+                                  hintStyle: const TextStyle(
                                     color: Color(0xFF999999),
                                     fontSize: 16,
                                   ),
-                                  prefixIcon: Icon(
+                                  prefixIcon: const Icon(
                                     Icons.search,
                                     color: Color(0xFFFF6B35),
                                     size: 24,
                                   ),
+                                  suffixIcon: GestureDetector(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: Image.asset(
+                                        'assets/images/filter.png',
+                                        width: 25,
+                                        height: 18,
+                                        color: Color(0xFFFF6B35),
+                                      ),
+                                    ),
+                                    //Điều hướng sang trang lọc
+                                    onTap: () {
+                                      Navigator.push(
+                                      context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const CategoryFilterPage(
+                                            category: 'Snacks',
+                                          )
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
+                                  contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 20,
-                                    vertical: 12,
+                                    vertical: 10,
                                   ),
                                 ),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Color(0xFF2D2D2D),
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          // Cart Icon
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: const Color(0xFFFF6B35),
-                                width: 1,
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () {
+                              context.push('/cart');
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
                               ),
-                            ),
-                            child: const Icon(
-                              Icons.shopping_cart_outlined,
-                              color: Color(0xFFFF6B35),
-                              size: 24,
+                              child: const Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6B35)),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           // Bell Icon
                           const NotificationBell(),
                           const SizedBox(width: 8),
-                          // Profile Icon
+                          // Notification
                           Container(
-                            width: 50,
-                            height: 50,
+                            width: 40,
+                            height: 40,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: const Color(0xFFFF6B35),
-                                width: 1,
-                              ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
                             ),
-                            child: const Icon(
-                              Icons.person_outline,
-                              color: Color(0xFFFF6B35),
-                              size: 24,
-                  ),
-            ),
-          ],
-        ),
+                            child: Icon(Icons.notifications_active_outlined, color: Color(0xFFFF6B35)),
+                          ),
+                          const SizedBox(width: 5),
+                        ],
+                      ),
                     ),
                     // Greeting
                     const Padding(
@@ -159,9 +172,9 @@ class _HomePageState extends State<HomePage> {
                             Text(
                               'Good Morning',
                               style: TextStyle(
-                                fontSize: 28,
+                                fontSize: 30,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF2D2D2D),
+                                color: Color(0xFFFFFFFF),
                               ),
                             ),
                             SizedBox(height: 4),
@@ -171,19 +184,19 @@ class _HomePageState extends State<HomePage> {
                                 fontSize: 16,
                                 color: Color(0xFFFF6B35),
                               ),
-          ),
-        ],
-      ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
-              // Category Section
+
+              // Category section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -211,9 +224,12 @@ class _HomePageState extends State<HomePage> {
                                 setState(() {
                                   selectedCategoryIndex = index;
                                 });
+                                if (categories[index]['title'] == 'Dessert') {
+                                  context.push('/desserts-filter');
+                                }
                               },
                               child: Column(
-        children: [
+                                children: [
                                   Container(
                                     width: 70,
                                     height: 70,
@@ -232,12 +248,12 @@ class _HomePageState extends State<HomePage> {
                                         index == 0
                                             ? Icons.fastfood
                                             : index == 1
-                                                ? Icons.restaurant
-                                                : index == 2
-                                                    ? Icons.eco
-                                                    : index == 3
-                                                        ? Icons.cake
-                                                        : Icons.local_drink,
+                                            ? Icons.restaurant
+                                            : index == 2
+                                            ? Icons.eco
+                                            : index == 3
+                                            ? Icons.cake
+                                            : Icons.local_drink,
                                         color: const Color(0xFFFF6B35),
                                         size: 30,
                                       ),
@@ -264,13 +280,13 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
-              // Best Seller Section
+
+              // Best Seller
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -313,7 +329,7 @@ class _HomePageState extends State<HomePage> {
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: bestSellers.length,
-                  itemBuilder: (context, index) {
+                        itemBuilder: (context, index) {
                           return BestSellerCard(
                             imagePath: bestSellers[index]['image']!,
                             price: bestSellers[index]['price']!,
@@ -324,15 +340,15 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
-              // Promo Banner
+
+              // Promo banner
               const PromoBanner(),
-              
+
               const SizedBox(height: 24),
-              
-              // Recommend Section
+
+              // Recommend
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -357,50 +373,66 @@ class _HomePageState extends State<HomePage> {
                             imagePath: recommends[index]['image']!,
                             price: recommends[index]['price']!,
                             rating: recommends[index]['rating']!,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              
+
               const SizedBox(height: 100),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFFF6B35),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              spreadRadius: 0,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
+      bottomNavigationBar: _buildBottomNavBar(),
+    );
+  }
+
+  Widget _buildCircleIcon(IconData icon) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: const Color(0xFFFF6B35), width: 1),
+      ),
+      child: Icon(icon, color: const Color(0xFFFF6B35), size: 24),
+    );
+  }
+
+  Widget _buildBottomNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFF6B35),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(Icons.home, true, () {}),
-                _buildNavItem(Icons.restaurant, false, () {}),
-                _buildNavItem(Icons.favorite_outline, false, () {}),
-                _buildNavItem(Icons.list_alt, false, () {}),
-                _buildNavItem(Icons.person_outline, false, () {
-                  Scaffold.of(context).openDrawer();
-                }),
-              ],
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(Icons.home, true, () {}),
+              _buildNavItem(Icons.restaurant, false, () {}),
+              _buildNavItem(Icons.favorite_outline, false, () {}),
+              _buildNavItem(Icons.list_alt, false, () {}),
+              _buildNavItem(Icons.person_outline, false, () {
+                context.push('/profile');
+              }),
+            ],
           ),
         ),
       ),
