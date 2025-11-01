@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/home_provider.dart';
+import '../../filters/pages/category_filter_page.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/best_seller_card.dart';
 import '../widgets/promo_banner.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedCategoryIndex = 0;
 
   final List<Map<String, String>> categories = [
@@ -49,6 +51,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: const ProfileDrawer(),
       body: SafeArea(
@@ -90,14 +93,27 @@ class _HomePageState extends State<HomePage> {
                                     color: Color(0xFFFF6B35),
                                     size: 24,
                                   ),
-                                  suffixIcon: Padding(
-                                    padding: const EdgeInsets.only(right: 12),
-                                    child: Image.asset(
-                                      'assets/images/filter.png',
-                                      width: 25,
-                                      height: 18,
-                                      color: Color(0xFFFF6B35),
+                                  suffixIcon: GestureDetector(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: Image.asset(
+                                        'assets/images/filter.png',
+                                        width: 25,
+                                        height: 18,
+                                        color: Color(0xFFFF6B35),
+                                      ),
                                     ),
+                                    //Điều hướng sang trang lọc
+                                    onTap: () {
+                                      Navigator.push(
+                                      context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const CategoryFilterPage(
+                                            category: 'Snacks',
+                                          )
+                                        ),
+                                      );
+                                    },
                                   ),
                                   border: InputBorder.none,
                                   contentPadding: const EdgeInsets.symmetric(
@@ -113,14 +129,19 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
+                          GestureDetector(
+                            onTap: () {
+                              context.push('/cart');
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              child: const Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6B35)),
                             ),
-                            child: Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6B35)),
                           ),
                           const SizedBox(width: 8),
                           // Notification
@@ -406,6 +427,9 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.restaurant, false, () {}),
               _buildNavItem(Icons.favorite_outline, false, () {}),
               _buildNavItem(Icons.list_alt, false, () {}),
+              _buildNavItem(Icons.person_outline, false, () {
+                context.push('/profile');
+              }),
             ],
           ),
         ),

@@ -9,6 +9,7 @@ import '../../features/auth/pages/login_page.dart';
 import '../../features/auth/pages/signup_page.dart';
 import '../../features/desserts/pages/desserts_filter_page.dart';
 import '../../features/filters/pages/category_filter_page.dart';
+import '../../features/cart/pages/cart_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -35,6 +36,10 @@ class AppRouter {
         builder: (context, state) => const HomePage(),
       ),
       GoRoute(
+        path: '/desserts-filter',
+        builder: (context, state) => const DessertsFilterPage(),
+      ),
+      GoRoute(
         path: '/restaurant/:id',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
@@ -50,8 +55,8 @@ class AppRouter {
         builder: (context, state) => const ProfilePage(),
       ),
       // GoRoute(
-      //   path: '/desserts-filter',
-      //   builder: (context, state) => const DessertsFilterPage(),
+      //   path: '/category_filter_page',
+      //   builder: (context, state) => const Dee(),
       // ),
       GoRoute(
         path: '/filter/:category',
@@ -59,6 +64,10 @@ class AppRouter {
           final cat = state.pathParameters['category']!;
           return CategoryFilterPage(category: cat);
         },
+      ),
+      GoRoute(
+        path: '/cart',
+        builder: (context, state) => const CartPage(),
       ),
     ],
   );
