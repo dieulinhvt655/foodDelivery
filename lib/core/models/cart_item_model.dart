@@ -59,13 +59,13 @@ class CartItemModel {
   factory CartItemModel.fromMap(Map<String, dynamic> map) {
     return CartItemModel(
       id: map['id'] ?? '',
-      foodId: map['foodId'] ?? '',
-      foodName: map['foodName'] ?? '',
-      foodImage: map['foodImage'] ?? '',
+      foodId: map['food_id'] ?? map['foodId'] ?? '',
+      foodName: map['food_name'] ?? map['foodName'] ?? '',
+      foodImage: map['food_image'] ?? map['foodImage'] ?? '',
       price: (map['price'] ?? 0.0).toDouble(),
       quantity: map['quantity'] ?? 1,
-      restaurantId: map['restaurantId'] ?? '',
-      restaurantName: map['restaurantName'] ?? '',
+      restaurantId: map['restaurant_id'] ?? map['restaurantId'] ?? '',
+      restaurantName: map['restaurant_name'] ?? map['restaurantName'] ?? '',
     );
   }
 }

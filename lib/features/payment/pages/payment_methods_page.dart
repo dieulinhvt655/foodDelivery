@@ -6,29 +6,29 @@ class PaymentMethodsPage extends StatelessWidget {
 
   final List<Map<String, dynamic>> _paymentMethods = const [
     {
-      'title': 'Thanh toán bằng thẻ',
+      'title': 'Credit Card',
       'icon': Icons.credit_card,
-      'subtitle': 'Thẻ tín dụng/ghi nợ',
+      'subtitle': 'Credit/Debit card',
     },
     {
-      'title': 'Thanh toán bằng ZaloPay',
+      'title': 'ZaloPay',
       'icon': Icons.account_balance_wallet,
-      'subtitle': 'Ví điện tử ZaloPay',
+      'subtitle': 'ZaloPay e-wallet',
     },
     {
-      'title': 'Thanh toán qua Momo',
+      'title': 'Momo',
       'icon': Icons.account_balance_wallet,
-      'subtitle': 'Ví điện tử Momo',
+      'subtitle': 'Momo e-wallet',
     },
     {
-      'title': 'Thanh toán khi nhận hàng',
+      'title': 'Cash on Delivery',
       'icon': Icons.local_shipping,
       'subtitle': 'COD - Cash on Delivery',
     },
     {
-      'title': 'Thanh toán bằng mã QR',
+      'title': 'QR Code Payment',
       'icon': Icons.qr_code,
-      'subtitle': 'Quét mã QR để thanh toán',
+      'subtitle': 'Scan QR code to pay',
     },
   ];
 
