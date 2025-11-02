@@ -94,7 +94,7 @@ class FoodDatabaseHelper {
     await db.insert('restaurants', {
       'id': 'rest_1',
       'name': 'Burger King',
-      'address': '123 Main Street, District 1, Ho Chi Minh City',
+      'address': 'C4 Giang Vo, Ba Dinh District, Hanoi',
       'phone': '+84 28 1234 5678',
       'image': 'assets/images/restaurants/burger_king.jpg',
       'rating': 4,
@@ -103,7 +103,7 @@ class FoodDatabaseHelper {
     await db.insert('restaurants', {
       'id': 'rest_2',
       'name': 'Pizza Hut',
-      'address': '456 Nguyen Hue Boulevard, District 1, Ho Chi Minh City',
+      'address': 'Ho Guom Plaza, 110 Tran Phu Street, Ha Dong District, Ha Noi',
       'phone': '+84 28 2345 6789',
       'image': 'assets/images/restaurants/pizza_hut.jpg',
       'rating': 5,
@@ -121,7 +121,7 @@ class FoodDatabaseHelper {
     await db.insert('restaurants', {
       'id': 'rest_4',
       'name': 'KFC Vietnam',
-      'address': '555 Bui Vien Street, District 1, Ho Chi Minh City',
+      'address': '34 Hang Bun, Ba Dinh Dist. Hanoi',
       'phone': '+84 28 5678 9012',
       'image': 'assets/images/restaurants/kfc.jpg',
       'rating': 4,
@@ -129,35 +129,17 @@ class FoodDatabaseHelper {
     });
     await db.insert('restaurants', {
       'id': 'rest_5',
-      'name': 'McDonald\'s',
-      'address': '888 Le Thanh Ton Street, District 1, Ho Chi Minh City',
+      'name': 'McDonalds',
+      'address': '34 Hang Bai, Hoan Kiem Dist. Hanoi',
       'phone': '+84 28 6789 0123',
       'image': 'assets/images/restaurants/mcdonalds.jpg',
       'rating': 4,
       'is_open': 1,
     });
-      await db.insert('restaurants', {
-        'id': 'rest_6',
-        'name': 'Anân Saigon',
-        'address': '89 Ho Tung Mau, District 1, Ho Chi Minh City',
-        'phone': '+84 28 3914 8888',
-        'image': 'assets/images/restaurants/anan_saigon.jpg',
-        'rating': 5,
-        'is_open': 1,
-      });
-    await db.insert('restaurants', {
-      'id': 'rest_7',
-      'name': 'Cục Gạch Quán',
-      'address': '10 Dang Tat, District 1, Ho Chi Minh City',
-      'phone': '+84 28 3925 3399',
-      'image': 'assets/images/restaurants/cuc_gach_quan.jpg',
-      'rating': 4,
-      'is_open': 1,
-    });
     await db.insert('restaurants', {
       'id': 'rest_8',
-      'name': 'Pizza 4P’s – Le Thanh Ton',
-      'address': '8/15 Le Thanh Ton, District 1, Ho Chi Minh City',
+      'name': 'Pizza 4P’s',
+      'address': '05 Phan Ke Binh, Ba Dinh Hanoi',
       'phone': '+84 28 3925 0570',
       'image': 'assets/images/restaurants/pizza_4ps.jpg',
       'rating': 5,
@@ -165,64 +147,19 @@ class FoodDatabaseHelper {
     });
     await db.insert('restaurants', {
       'id': 'rest_9',
-      'name': 'Hum Vegetarian, Cafe & Restaurant',
-      'address': '32 Vo Van Tan, District 3, Ho Chi Minh City',
+      'name': 'THE VEG - Organic vego & tea',
+      'address': '2nd Floor, 48 Trang Tien Street Hoan Kiem Hanoi',
       'phone': '+84 28 3823 1083',
-      'image': 'assets/images/restaurants/hum_vegetarian.jpg',
+      'image': 'assets/images/restaurants/theveg.jpg',
       'rating': 5,
       'is_open': 1,
     });
     await db.insert('restaurants', {
       'id': 'rest_10',
-      'name': 'La Villa French Restaurant',
-      'address': '14 Ngo Quang Huy, Thao Dien, District 2, Ho Chi Minh City',
+      'name': 'French Grill',
+      'address': 'No. 8, Do Duc Duc Road, Me Tri, South Tu Liem District, Hanoi',
       'phone': '+84 28 3744 9191',
-      'image': 'assets/images/restaurants/la_villa.jpg',
-      'rating': 5,
-      'is_open': 1,
-    });
-    await db.insert('restaurants', {
-      'id': 'rest_6',
-      'name': 'Anân Saigon',
-      'address': '89 Ho Tung Mau, District 1, Ho Chi Minh City',
-      'phone': '+84 28 3914 8888',
-      'image': 'assets/images/restaurants/anan_saigon.jpg',
-      'rating': 5,
-      'is_open': 1,
-    });
-    await db.insert('restaurants', {
-      'id': 'rest_7',
-      'name': 'Cục Gạch Quán',
-      'address': '10 Dang Tat, District 1, Ho Chi Minh City',
-      'phone': '+84 28 3925 3399',
-      'image': 'assets/images/restaurants/cuc_gach_quan.jpg',
-      'rating': 4,
-      'is_open': 1,
-    });
-    await db.insert('restaurants', {
-      'id': 'rest_8',
-      'name': 'Pizza 4P’s – Le Thanh Ton',
-      'address': '8/15 Le Thanh Ton, District 1, Ho Chi Minh City',
-      'phone': '+84 28 3925 0570',
-      'image': 'assets/images/restaurants/pizza_4ps.jpg',
-      'rating': 5,
-      'is_open': 1,
-    });
-    await db.insert('restaurants', {
-      'id': 'rest_9',
-      'name': 'Hum Vegetarian, Cafe & Restaurant',
-      'address': '32 Vo Van Tan, District 3, Ho Chi Minh City',
-      'phone': '+84 28 3823 1083',
-      'image': 'assets/images/restaurants/hum_vegetarian.jpg',
-      'rating': 5,
-      'is_open': 1,
-    });
-    await db.insert('restaurants', {
-      'id': 'rest_10',
-      'name': 'La Villa French Restaurant',
-      'address': '14 Ngo Quang Huy, Thao Dien, District 2, Ho Chi Minh City',
-      'phone': '+84 28 3744 9191',
-      'image': 'assets/images/restaurants/la_villa.jpg',
+      'image': 'assets/images/restaurants/french_grill.jpg',
       'rating': 5,
       'is_open': 1,
     });
@@ -302,7 +239,7 @@ class FoodDatabaseHelper {
       'rating': 5,
       'isAvailable': 1,
       'preparationTime': 14,
-      'restaurantId': 'rest_6',
+      'restaurantId': 'rest_4',
     });
     await db.insert('foods', {
       'id': 'food_7',
@@ -314,7 +251,7 @@ class FoodDatabaseHelper {
       'rating': 4,
       'isAvailable': 1,
       'preparationTime': 12,
-      'restaurantId': 'rest_7',
+      'restaurantId': 'rest_5',
     });
     await db.insert('foods', {
       'id': 'food_8',
@@ -902,6 +839,13 @@ class FoodDatabaseHelper {
     final path = join(dbPath, 'food_delivery.db');
     await databaseFactory.deleteDatabase(path);
     _database = null;
+  }
+
+  // Reset database - delete and recreate with fresh data
+  Future<void> resetDatabase() async {
+    await deleteDatabase();
+    // Next call to database getter will recreate the database
+    await database;
   }
 }
 

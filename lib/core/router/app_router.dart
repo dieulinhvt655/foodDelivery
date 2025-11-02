@@ -16,6 +16,8 @@ import '../../features/profile/pages/change_password_page.dart';
 import '../../features/address/pages/address_list_page.dart';
 import '../../features/address/pages/address_form_page.dart';
 import '../../features/payment/pages/payment_methods_page.dart';
+import '../../features/foods/pages/foods_list_page.dart';
+import '../../features/restaurants/pages/restaurants_list_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -98,6 +100,14 @@ class AppRouter {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationsPage(),
+      ),
+      GoRoute(
+        path: '/foods',
+        builder: (context, state) => const FoodsListPage(),
+      ),
+      GoRoute(
+        path: '/restaurants',
+        builder: (context, state) => const RestaurantsListPage(),
       ),
     ],
   );

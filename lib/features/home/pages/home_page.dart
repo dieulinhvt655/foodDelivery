@@ -427,9 +427,13 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(Icons.home, true, () {}),
-              _buildNavItem(Icons.restaurant, false, () {}),
+              _buildNavItem(Icons.restaurant, false, () {
+                context.push('/restaurants');
+              }),
               _buildNavItem(Icons.favorite_outline, false, () {}),
-              _buildNavItem(Icons.list_alt, false, () {}),
+              _buildNavItem(Icons.list_alt, false, () {
+                context.push('/foods');
+              }),
               _buildNavItem(Icons.person_outline, false, () {
                 context.push('/profile');
               }),
