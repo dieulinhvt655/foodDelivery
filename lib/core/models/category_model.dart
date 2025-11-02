@@ -1,14 +1,10 @@
 class CategoryModel {
   final String id;
   final String name;
-  final String icon;
-  final String displayName;
 
   CategoryModel({
     required this.id,
     required this.name,
-    required this.icon,
-    required this.displayName,
   });
 
   // Convert CategoryModel to Map
@@ -16,8 +12,6 @@ class CategoryModel {
     return {
       'id': id,
       'name': name,
-      'icon': icon,
-      'displayName': displayName,
     };
   }
 
@@ -26,8 +20,6 @@ class CategoryModel {
     return CategoryModel(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
-      icon: map['icon'] ?? '',
-      displayName: map['displayName'] ?? '',
     );
   }
 
@@ -39,21 +31,17 @@ class CategoryModel {
   // Copy with method for updating
   CategoryModel copyWith({
     String? id,
-    String? name,
-    String? icon,
-    String? displayName,
+    String? name
   }) {
     return CategoryModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      icon: icon ?? this.icon,
-      displayName: displayName ?? this.displayName,
     );
   }
 
   @override
   String toString() {
-    return 'CategoryModel(id: $id, name: $name, icon: $icon, displayName: $displayName)';
+    return 'CategoryModel(id: $id, name: $name)';
   }
 }
 
