@@ -1,92 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../../core/providers/cart_provider.dart';
+import '../../../core/models/cart_item_model.dart';
+import '../../../core/models/voucher_model.dart';
+import '../widgets/voucher_dialog.dart';
 
-class CartPage extends StatefulWidget {
+class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
-  @override
-  State<CartPage> createState() => _CartPageState();
-}
+  static const double _deliveryFee = 4.50;
+  static const double _vatRate = 0.10; // 10% VAT
 
-class _CartPageState extends State<CartPage> {
-  final List<Map<String, dynamic>> _cartItems = [];
-
-  double get _subTotal {
-    return _cartItems.fold<double>(0, (sum, item) {
-      return sum + (item['price'] as double) * (item['quantity'] as int);
-    });
+  void _incrementQuantity(BuildContext context, CartItemModel item) {
+    context.read<CartProvider>().updateQuantity(item.id, item.quantity + 1);
   }
 
-  final double _deliveryFee = 4.50;
-  final double _discount = 3.00;
-
-  void _incrementQuantity(int index) {
-    setState(() {
-      _cartItems[index]['quantity'] = (_cartItems[index]['quantity'] as int) + 1;
-    });
-  }
-
-  void _decrementQuantity(int index) {
-    setState(() {
-      final current = _cartItems[index]['quantity'] as int;
-      if (current > 1) {
-        _cartItems[index]['quantity'] = current - 1;
-      } else {
-        _cartItems.removeAt(index);
-      }
-    });
+  void _decrementQuantity(BuildContext context, CartItemModel item) {
+    if (item.quantity > 1) {
+      context.read<CartProvider>().updateQuantity(item.id, item.quantity - 1);
+    } else {
+      context.read<CartProvider>().removeFromCart(item.id);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final total = _subTotal + _deliveryFee - _discount;
+    return Consumer<CartProvider>(
+      builder: (context, cartProvider, child) {
+        final cartItems = cartProvider.cartItems;
+        final subtotal = cartProvider.subtotal;
+        final discount = cartProvider.discountAmount;
+        final deliveryFee = cartProvider.appliedVoucher?.type == VoucherType.freeShipping 
+            ? 0.0 
+            : _deliveryFee;
+        final vat = subtotal * _vatRate;
+        final total = subtotal - discount + deliveryFee + vat;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(
-              child: _cartItems.isEmpty
-                  ? const _EmptyCartState()
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...List.generate(_cartItems.length, (index) {
-                            final item = _cartItems[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: _CartItemTile(
-                                title: item['title'] as String,
-                                subtitle: item['subtitle'] as String,
-                                price: item['price'] as double,
-                                quantity: item['quantity'] as int,
-                                onIncrement: () => _incrementQuantity(index),
-                                onDecrement: () => _decrementQuantity(index),
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(context),
+                Expanded(
+                  child: cartProvider.isEmpty
+                      ? const _EmptyCartState()
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...List.generate(cartItems.length, (index) {
+                                final item = cartItems[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _CartItemTile(
+                                    title: item.foodName,
+                                    subtitle: item.restaurantName,
+                                    price: item.price,
+                                    quantity: item.quantity,
+                                    onIncrement: () => _incrementQuantity(context, item),
+                                    onDecrement: () => _decrementQuantity(context, item),
+                                  ),
+                                );
+                              }),
+                              const SizedBox(height: 12),
+                              _VoucherInput(
+                                appliedVoucher: cartProvider.appliedVoucher,
                               ),
-                            );
-                          }),
-                          const SizedBox(height: 12),
-                          _VoucherInput(),
-                          const SizedBox(height: 24),
-                          _SummaryRow(label: 'Subtotal', value: _subTotal),
-                          _SummaryRow(label: 'Delivery fee', value: _deliveryFee),
-                          _SummaryRow(label: 'Discount', value: -_discount, isDiscount: true),
-                          const Divider(height: 32, color: Color(0xFFFFD9A0), thickness: 1.2),
-                          _SummaryRow(label: 'Total', value: total, emphasis: true),
-                          const SizedBox(height: 24),
-                          _CheckoutButton(onPressed: () {}),
-                        ],
-                      ),
-                    ),
+                              const SizedBox(height: 24),
+                              _SummaryRow(label: 'Subtotal', value: subtotal),
+                              _SummaryRow(label: 'Delivery fee', value: deliveryFee),
+                              if (discount > 0)
+                                _SummaryRow(
+                                  label: 'Discount',
+                                  value: -discount,
+                                  isDiscount: true,
+                                ),
+                              _SummaryRow(label: 'VAT (10%)', value: vat),
+                              const Divider(height: 32, color: Color(0xFFFFD9A0), thickness: 1.2),
+                              _SummaryRow(label: 'Total', value: total, emphasis: true),
+                              const SizedBox(height: 24),
+                              _CheckoutButton(
+                                onPressed: () {
+                                  context.push('/confirm-order');
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavBar(),
+          ),
+        );
+      },
     );
   }
 
@@ -132,60 +141,6 @@ class _CartPageState extends State<CartPage> {
           ),
           const Spacer(),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFF6B35),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, true, () {}),
-              _buildNavItem(Icons.restaurant, false, () {}),
-              _buildNavItem(Icons.favorite_outline, false, () {}),
-              _buildNavItem(Icons.list_alt, false, () {}),
-              _buildNavItem(Icons.person_outline, false, () {
-                context.go('/profile');
-              }),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isSelected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          color: isSelected ? const Color(0xFFFF6B35) : Colors.white,
-          size: 28,
-        ),
       ),
     );
   }
@@ -321,51 +276,94 @@ class _QuantityButton extends StatelessWidget {
 }
 
 class _VoucherInput extends StatelessWidget {
+  final VoucherModel? appliedVoucher;
+
+  const _VoucherInput({this.appliedVoucher});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF4E3),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFFFD9A0), width: 1),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(Icons.card_giftcard, color: Color(0xFFFF6B35)),
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => const VoucherDialog(),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        decoration: BoxDecoration(
+          color: appliedVoucher != null
+              ? const Color(0xFFFFF4E3)
+              : const Color(0xFFFFF4E3),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: appliedVoucher != null
+                ? const Color(0xFFFF6B35)
+                : const Color(0xFFFFD9A0),
+            width: appliedVoucher != null ? 2 : 1,
           ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Text(
-              'Add your promo code',
-              style: TextStyle(
-                fontSize: 15,
-                color: Color(0xFF7A7A7A),
-              ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFFF6B35),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            child: const Text(
-              'Apply',
-              style: TextStyle(
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
                 color: Colors.white,
-                fontWeight: FontWeight.w600,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.card_giftcard, color: Color(0xFFFF6B35)),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appliedVoucher != null
+                        ? appliedVoucher!.name
+                        : 'Add your promo code',
+                    style: TextStyle(
+                      fontSize: appliedVoucher != null ? 13 : 15,
+                      fontWeight: appliedVoucher != null
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                      color: appliedVoucher != null
+                          ? const Color(0xFF2D2D2D)
+                          : const Color(0xFF7A7A7A),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (appliedVoucher != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Tap to change',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-          ),
-        ],
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF6B35),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              child: const Text(
+                'Apply',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -420,25 +418,27 @@ class _CheckoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFF6B35),
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        elevation: 3,
-      ),
-      child: const SizedBox(
-        width: double.infinity,
-        child: Center(
-          child: Text(
-            'Checkout',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: 0.5,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFF6B35),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            elevation: 3,
+          ),
+          child: const Center(
+            child: Text(
+              'Checkout',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -486,22 +486,7 @@ class _EmptyCartState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: () => context.push('/home'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B35),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            ),
-            child: const Text(
-              'Explore menu',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ),
+
         ],
       ),
     );

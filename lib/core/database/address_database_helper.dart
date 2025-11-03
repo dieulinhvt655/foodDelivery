@@ -82,5 +82,18 @@ class AddressDatabaseHelper {
       whereArgs: [addressId],
     );
   }
+
+  Future<AddressModel?> getAddressById(int? addressId) async {
+    if (addressId == null) return null;
+    final db = await _db;
+    final result = await db.query(
+      'addresses',
+      where: 'id = ?',
+      whereArgs: [addressId],
+      limit: 1,
+    );
+    if (result.isEmpty) return null;
+    return AddressModel.fromMap(result.first);
+  }
 }
 

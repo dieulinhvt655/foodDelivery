@@ -17,6 +17,8 @@ import '../../features/address/pages/address_form_page.dart';
 import '../../features/payment/pages/payment_methods_page.dart';
 import '../../features/foods/pages/foods_list_page.dart';
 import '../../features/restaurants/pages/restaurants_list_page.dart';
+import '../../features/orders/pages/confirm_order_page.dart';
+import '../../features/orders/pages/order_confirmed_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -91,6 +93,20 @@ class AppRouter {
       GoRoute(
         path: '/cart',
         builder: (context, state) => const CartPage(),
+      ),
+      GoRoute(
+        path: '/confirm-order',
+        builder: (context, state) => const ConfirmOrderPage(),
+      ),
+      GoRoute(
+        path: '/order-confirmed',
+        builder: (context, state) {
+          final deliveryDateStr = state.uri.queryParameters['deliveryDate'];
+          final deliveryDate = deliveryDateStr != null
+              ? DateTime.parse(deliveryDateStr)
+              : DateTime.now().add(const Duration(days: 2));
+          return OrderConfirmedPage(deliveryDate: deliveryDate);
+        },
       ),
       GoRoute(
         path: '/notifications',

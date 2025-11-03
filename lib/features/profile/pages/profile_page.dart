@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/cart_provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -11,6 +12,12 @@ class ProfilePage extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
 
     final menuItems = [
+      {
+        'icon': Icons.shopping_bag_outlined,
+        'title': 'My order',
+        'subtitle': 'View your orders',
+        'onTap': () => context.push('/orders'),
+      },
       {
         'icon': Icons.person_outline,
         'title': 'Personal Information',
@@ -76,6 +83,11 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 24),
                     _LogoutButton(
                       onTap: () {
+                        // Save cart before logout
+                        final cartProvider = context.read<CartProvider>();
+                        if (authProvider.userId != null) {
+                          cartProvider.saveCartToDatabase(authProvider.userId!);
+                        }
                         authProvider.logout();
                         context.go('/welcome');
                       },
@@ -88,7 +100,6 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(context),
     );
   }
 
@@ -106,6 +117,14 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Back button
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: const Padding(
+              padding: EdgeInsets.only(bottom: 8.0),
+              child: Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35), size: 20),
+            ),
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -160,82 +179,6 @@ class ProfilePage extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFF6B35),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                icon: Icons.home,
-                isSelected: false,
-                onTap: () => context.go('/home'),
-              ),
-              _buildNavItem(
-                icon: Icons.restaurant,
-                isSelected: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.favorite_outline,
-                isSelected: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.list_alt,
-                isSelected: false,
-                onTap: () {},
-              ),
-              _buildNavItem(
-                icon: Icons.person_outline,
-                isSelected: true,
-                onTap: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          color: isSelected ? const Color(0xFFFF6B35) : Colors.white,
-          size: 28,
-        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/cart_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,10 +20,19 @@ class _LoginPageState extends State<LoginPage> {
   void _login(BuildContext context) async {
     setState(() { _isLoading = true; _error = null; });
     try {
-      await Provider.of<AuthProvider>(context, listen: false).login(
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+      
+      await authProvider.login(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
+      
+      // Load cart from database after successful login
+      if (authProvider.userId != null) {
+        await cartProvider.loadCartFromDatabase(authProvider.userId!);
+      }
+      
       // Nếu đăng nhập thành công:
       if (context.mounted) context.go('/home');
     } catch (e) {

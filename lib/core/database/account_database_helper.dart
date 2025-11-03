@@ -2,13 +2,15 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../models/account_model.dart';
+import 'order_database_helper.dart';
+import 'notification_database_helper.dart';
 
 class AccountDatabaseHelper {
   AccountDatabaseHelper._();
 
   static final AccountDatabaseHelper instance = AccountDatabaseHelper._();
   static const _dbName = 'yummy.db';
-  static const _dbVersion = 3;
+  static const _dbVersion = 6;
   static const _usersTable = 'users';
   static const _addressesTable = 'addresses';
 
@@ -30,6 +32,9 @@ class AccountDatabaseHelper {
       onCreate: (db, version) async {
         await _createUsersTable(db);
         await _createAddressesTable(db);
+        // Initialize orders and notifications tables
+        await OrderDatabaseHelper.instance.createTablesOnInit(db);
+        await NotificationDatabaseHelper.instance.createTablesOnInit(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -37,6 +42,19 @@ class AccountDatabaseHelper {
         }
         if (oldVersion < 3) {
           await _createAddressesTable(db);
+        }
+        if (oldVersion < 4 || oldVersion < 5) {
+          // Initialize orders and notifications tables
+          await OrderDatabaseHelper.instance.createTablesOnInit(db);
+          await NotificationDatabaseHelper.instance.createTablesOnInit(db);
+        }
+        if (oldVersion < 6) {
+          // Add order_code column to orders table if it doesn't exist
+          try {
+            await db.execute('ALTER TABLE orders ADD COLUMN order_code TEXT');
+          } catch (e) {
+            // Column might already exist, ignore error
+          }
         }
       },
     );
