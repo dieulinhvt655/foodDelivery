@@ -7,7 +7,6 @@ import '../../features/orders/pages/orders_page.dart';
 import '../../features/welcome/pages/welcome_page.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/auth/pages/signup_page.dart';
-import '../../features/desserts/pages/desserts_filter_page.dart';
 import '../../features/filters/pages/category_filter_page.dart';
 import '../../features/cart/pages/cart_page.dart';
 import '../../features/notifications/pages/notifications_page.dart';
@@ -44,10 +43,6 @@ class AppRouter {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomePage(),
-      ),
-      GoRoute(
-        path: '/desserts-filter',
-        builder: (context, state) => const DessertsFilterPage(),
       ),
       GoRoute(
         path: '/restaurant/:id',

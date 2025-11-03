@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
+import '../../../core/models/restaurants_model.dart';
 
 class FoodsListPage extends StatefulWidget {
   const FoodsListPage({super.key});
@@ -13,6 +14,7 @@ class _FoodsListPageState extends State<FoodsListPage> {
   final FoodDatabaseHelper _dbHelper = FoodDatabaseHelper.instance;
   bool _isLoading = true;
   List<FoodModel> _foods = [];
+  Map<String, List<RestaurantModel>> _restaurantsByFood = {};
   String? _error;
 
   @override
@@ -29,9 +31,14 @@ class _FoodsListPageState extends State<FoodsListPage> {
 
     try {
       final foods = await _dbHelper.getAllFoods();
+      
+      // Load all restaurants grouped by food (more efficient)
+      final restaurantsByFood = await _dbHelper.getAllRestaurantsByFoods();
+      
       if (!mounted) return;
       setState(() {
         _foods = foods;
+        _restaurantsByFood = restaurantsByFood;
       });
     } catch (e) {
       if (!mounted) return;
@@ -51,24 +58,44 @@ class _FoodsListPageState extends State<FoodsListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF2D2D2D)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'All Foods',
-          style: TextStyle(
-            color: Color(0xFF2D2D2D),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: _isLoading
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header with decoration
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFB800),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'All Foods',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 48), // Balance the back button
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(
@@ -118,6 +145,9 @@ class _FoodsListPageState extends State<FoodsListPage> {
                         },
                       ),
                     ),
+            )],
+        ),
+      ),
     );
   }
 
@@ -245,6 +275,31 @@ class _FoodsListPageState extends State<FoodsListPage> {
                       ),
                     ],
                   ),
+                  // Restaurants that sell this food
+                  if (_restaurantsByFood[food.id] != null && 
+                      _restaurantsByFood[food.id]!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.restaurant, size: 14, color: Colors.grey[600]),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            _restaurantsByFood[food.id]!.length == 1
+                                ? 'Available at: ${_restaurantsByFood[food.id]!.first.name}'
+                                : 'Available at ${_restaurantsByFood[food.id]!.length} restaurants',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

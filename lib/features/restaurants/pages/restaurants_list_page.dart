@@ -52,24 +52,44 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF2D2D2D)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Restaurants',
-          style: TextStyle(
-            color: Color(0xFF2D2D2D),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: _isLoading
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header with decoration
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFB800),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Restaurants',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 48), // Balance the back button
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(
@@ -119,7 +139,9 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                         },
                       ),
                     ),
-    );
+         ),
+        ],
+        )));
   }
 
   Widget _buildRestaurantCard(RestaurantModel restaurant) {
