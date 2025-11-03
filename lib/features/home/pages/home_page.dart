@@ -292,9 +292,17 @@ class _HomePageState extends State<HomePage> {
                                 setState(() {
                                   selectedCategoryIndex = index;
                                 });
-                                if (categories[index]['title'] == 'Dessert') {
-                                  context.push('/desserts-filter');
-                                }
+                                // Map index -> categoryId trong DB
+                                final categoryId = index == 0
+                                    ? 'cat_1' // Snacks
+                                    : index == 1
+                                        ? 'cat_2' // Meal
+                                        : index == 2
+                                            ? 'cat_3' // Vegan
+                                            : index == 3
+                                                ? 'cat_4' // Dessert
+                                                : 'cat_5'; // Drinks
+                                context.push('/foods?categoryId=$categoryId');
                               },
                               child: Column(
                                 children: [
@@ -497,7 +505,10 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.restaurant, false, () {
                 context.push('/restaurants');
               }),
-              _buildNavItem(Icons.favorite_outline, false, () {}),
+              _buildNavItem(Icons.favorite_outline, false, () {
+                context.push('/favorites');
+              }),
+
               _buildNavItem(Icons.list_alt, false, () {
                 context.push('/foods');
               }),

@@ -5,6 +5,7 @@ import 'core/theme/app_theme.dart';
 import 'core/providers/home_provider.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/cart_provider.dart';
+import 'core/providers/favorites_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
       ],
       child: MaterialApp.router(
         title: 'Food Delivery',

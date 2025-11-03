@@ -4,13 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../models/account_model.dart';
 import 'order_database_helper.dart';
 import 'notification_database_helper.dart';
+import 'favorites_database_helper.dart';
 
 class AccountDatabaseHelper {
   AccountDatabaseHelper._();
 
   static final AccountDatabaseHelper instance = AccountDatabaseHelper._();
   static const _dbName = 'yummy.db';
-  static const _dbVersion = 6;
+  static const _dbVersion = 7;
   static const _usersTable = 'users';
   static const _addressesTable = 'addresses';
 
@@ -35,6 +36,7 @@ class AccountDatabaseHelper {
         // Initialize orders and notifications tables
         await OrderDatabaseHelper.instance.createTablesOnInit(db);
         await NotificationDatabaseHelper.instance.createTablesOnInit(db);
+        await FavoritesDatabaseHelper.instance.createTablesOnInit(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -56,6 +58,7 @@ class AccountDatabaseHelper {
             // Column might already exist, ignore error
           }
         }
+        await FavoritesDatabaseHelper.instance.createTablesOnInit(db);
       },
     );
   }

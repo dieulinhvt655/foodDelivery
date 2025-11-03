@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/restaurants_model.dart';
 
@@ -53,95 +52,112 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header with decoration
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFB800),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+        child: RefreshIndicator(
+          onRefresh: _loadRestaurants,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFB800),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(32),
+                      bottomRight: Radius.circular(32),
                     ),
-                    const Expanded(
-                      child: Text(
-                        'Restaurants',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 48), // Balance the back button
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error: $_error',
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadRestaurants,
-                        child: const Text('Retry'),
-                      ),
-                    ],
                   ),
-                )
-              : _restaurants.isEmpty
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.restaurant, size: 64, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'No restaurants available',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 44,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35), size: 20),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'Restaurants',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadRestaurants,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _restaurants.length,
-                        itemBuilder: (context, index) {
-                          final restaurant = _restaurants[index];
-                          return _buildRestaurantCard(restaurant);
-                        },
-                      ),
+                        ),
+                        const SizedBox(width: 48),
+                      ],
                     ),
-         ),
-        ],
-        )));
+                  ),
+                ),
+              ),
+              if (_isLoading)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_error != null)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('Error: $_error', style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        ElevatedButton(onPressed: _loadRestaurants, child: const Text('Retry')),
+                      ],
+                    ),
+                  ),
+                )
+              else if (_restaurants.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.restaurant, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text('No restaurants available', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final restaurant = _restaurants[index];
+                        return _buildRestaurantCard(restaurant);
+                      },
+                      childCount: _restaurants.length,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildRestaurantCard(RestaurantModel restaurant) {
@@ -150,20 +166,18 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Color(0xFFFFB800).withValues(alpha: 0.35), width: 0.8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            context.push('/restaurant/${restaurant.id}');
-          },
           borderRadius: BorderRadius.circular(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

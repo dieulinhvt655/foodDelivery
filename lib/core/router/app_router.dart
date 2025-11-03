@@ -17,6 +17,7 @@ import '../../features/address/pages/address_form_page.dart';
 import '../../features/payment/pages/payment_methods_page.dart';
 import '../../features/foods/pages/foods_list_page.dart';
 import '../../features/restaurants/pages/restaurants_list_page.dart';
+// import '../../features/favorites/pages/favorites_page.dart';
 import '../../features/orders/pages/confirm_order_page.dart';
 import '../../features/orders/pages/order_confirmed_page.dart';
 
@@ -79,10 +80,6 @@ class AppRouter {
         path: '/payment-methods',
         builder: (context, state) => const PaymentMethodsPage(),
       ),
-      // GoRoute(
-      //   path: '/category_filter_page',
-      //   builder: (context, state) => const Dee(),
-      // ),
       GoRoute(
         path: '/filter/:category',
         builder: (context, state) {
@@ -114,11 +111,22 @@ class AppRouter {
       ),
       GoRoute(
         path: '/foods',
-        builder: (context, state) => const FoodsListPage(),
+        builder: (context, state) {
+          final categoryId = state.uri.queryParameters['categoryId'];
+          final showFavorites = state.uri.queryParameters['favorites'] == '1';
+          return FoodsListPage(
+            showFavoritesOnly: showFavorites,
+            categoryId: categoryId,
+          );
+        },
       ),
       GoRoute(
         path: '/restaurants',
         builder: (context, state) => const RestaurantsListPage(),
+      ),
+      GoRoute(
+        path: '/favorites',
+        builder: (context, state) => const FoodsListPage(showFavoritesOnly: true),
       ),
     ],
   );

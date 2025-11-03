@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/restaurants_model.dart';
 import '../../../core/models/food_model.dart';
-import '../widgets/food_detail_popup.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
@@ -63,17 +62,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     }
   }
 
-  void _showFoodDetail(FoodModel food) {
-    if (_restaurant == null) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => FoodDetailPopup(
-        food: food,
-        restaurant: _restaurant!,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +97,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                       pinned: true,
                       backgroundColor: Colors.white,
                       leading: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35)),
                         onPressed: () => Navigator.pop(context),
                       ),
                       flexibleSpace: FlexibleSpaceBar(
@@ -303,18 +291,18 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Color(0xFFFFB800).withValues(alpha: 0.35), width: 0.8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _showFoodDetail(food),
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(16),

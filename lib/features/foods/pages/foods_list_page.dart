@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../core/providers/favorites_provider.dart';
+import '../../restaurant_detail/widgets/food_detail_popup.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
 import '../../../core/models/restaurants_model.dart';
 
 class FoodsListPage extends StatefulWidget {
-  const FoodsListPage({super.key});
+  final bool showFavoritesOnly;
+  final String? categoryId;
+  const FoodsListPage({super.key, this.showFavoritesOnly = false, this.categoryId});
 
   @override
   State<FoodsListPage> createState() => _FoodsListPageState();
@@ -16,6 +21,27 @@ class _FoodsListPageState extends State<FoodsListPage> {
   List<FoodModel> _foods = [];
   Map<String, List<RestaurantModel>> _restaurantsByFood = {};
   String? _error;
+
+  void _showAddToCartPopup(FoodModel food) {
+    final restaurants = _restaurantsByFood[food.id] ?? [];
+    if (restaurants.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This food is not available at any restaurant'),
+          backgroundColor: Color(0xFFFF6B35),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final restaurant = restaurants.first;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => FoodDetailPopup(food: food, restaurant: restaurant),
+    );
+  }
 
   @override
   void initState() {
@@ -30,15 +56,33 @@ class _FoodsListPageState extends State<FoodsListPage> {
     });
 
     try {
-      final foods = await _dbHelper.getAllFoods();
+      List<FoodModel> foods;
       
-      // Load all restaurants grouped by food (more efficient)
-      final restaurantsByFood = await _dbHelper.getAllRestaurantsByFoods();
+      // Truy vấn theo categoryId nếu có
+      if (widget.categoryId != null && widget.categoryId!.isNotEmpty) {
+        foods = await _dbHelper.getFoodsByCategoryId(widget.categoryId!);
+        // Không load restaurants khi lọc theo category
+        _restaurantsByFood = {};
+      } else {
+        foods = await _dbHelper.getAllFoods();
+        // Load restaurants chỉ khi không lọc theo category
+        final restaurantsByFood = await _dbHelper.getAllRestaurantsByFoods();
+        _restaurantsByFood = restaurantsByFood;
+      }
+      
+      // Lọc theo favorites nếu cần
+      if (widget.showFavoritesOnly) {
+        final favs = context.read<FavoritesProvider>();
+        await favs.loadFavorites();
+        final favIds = favs.favoriteFoodIds;
+        foods = foods.where((f) => favIds.contains(f.id)).toList();
+        // Không load restaurants khi hiển thị favorites
+        _restaurantsByFood = {};
+      }
       
       if (!mounted) return;
       setState(() {
         _foods = foods;
-        _restaurantsByFood = restaurantsByFood;
       });
     } catch (e) {
       if (!mounted) return;
@@ -59,93 +103,123 @@ class _FoodsListPageState extends State<FoodsListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header with decoration
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFB800),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+        child: RefreshIndicator(
+          onRefresh: _loadFoods,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFB800),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(32),
+                      bottomRight: Radius.circular(32),
                     ),
-                    const Expanded(
-                      child: Text(
-                        'All Foods',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 48), // Balance the back button
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error: $_error',
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadFoods,
-                        child: const Text('Retry'),
-                      ),
-                    ],
                   ),
-                )
-              : _foods.isEmpty
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.restaurant_menu, size: 64, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'No foods available',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 44,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35), size: 20),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            widget.showFavoritesOnly
+                                ? 'Favorites'
+                                : (widget.categoryId != null
+                                    ? (widget.categoryId == 'cat_1'
+                                        ? 'Snacks'
+                                        : widget.categoryId == 'cat_2'
+                                            ? 'Meal'
+                                            : widget.categoryId == 'cat_3'
+                                                ? 'Vegan'
+                                                : widget.categoryId == 'cat_4'
+                                                    ? 'Dessert'
+                                                    : widget.categoryId == 'cat_5'
+                                                        ? 'Drinks'
+                                                        : 'Category')
+                                    : 'All Foods'),
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadFoods,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _foods.length,
-                        itemBuilder: (context, index) {
-                          final food = _foods[index];
-                          return _buildFoodCard(food);
-                        },
-                      ),
+                        ),
+                        const SizedBox(width: 48),
+                      ],
                     ),
-            )],
+                  ),
+                ),
+              ),
+              if (_isLoading)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (_error != null)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('Error: $_error', style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        ElevatedButton(onPressed: _loadFoods, child: const Text('Retry')),
+                      ],
+                    ),
+                  ),
+                )
+              else if (_foods.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.restaurant_menu, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text('No foods available', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final food = _foods[index];
+                        return _buildFoodCard(food);
+                      },
+                      childCount: _foods.length,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -157,16 +231,17 @@ class _FoodsListPageState extends State<FoodsListPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Color(0xFFFFB800).withValues(alpha: 0.35), width: 0.8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Food Image
           Container(
@@ -245,7 +320,6 @@ class _FoodsListPageState extends State<FoodsListPage> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
                   Row(
                     children: [
                       // Rating
@@ -263,22 +337,42 @@ class _FoodsListPageState extends State<FoodsListPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 14),
                       // Price
                       Text(
                         '\$${food.price.toStringAsFixed(2)}',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFFF6B35),
                         ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: food.isAvailable ? () => _showAddToCartPopup(food) : null,
+                        icon: const Icon(Icons.add_shopping_cart, color: Color(0xFFFF6B35), size: 20),
+                      ),
+                      const SizedBox(width: 4),
+                      Consumer<FavoritesProvider>(
+                        builder: (context, favs, _) {
+                          final isFav = favs.isFavorite(food.id);
+                          return IconButton(
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => favs.toggleFavorite(food.id),
+                            icon: Icon(
+                              isFav ? Icons.favorite : Icons.favorite_border,
+                              color: isFav ? const Color(0xFFFF6B35) : Colors.grey[500],
+                              size: 20,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
                   // Restaurants that sell this food
                   if (_restaurantsByFood[food.id] != null && 
                       _restaurantsByFood[food.id]!.isNotEmpty) ...[
-                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.restaurant, size: 14, color: Colors.grey[600]),
