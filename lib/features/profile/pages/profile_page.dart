@@ -37,11 +37,6 @@ class ProfilePage extends StatelessWidget {
         'onTap': () => context.push('/payment-methods'),
       },
       {
-        'icon': Icons.receipt_long_outlined,
-        'title': 'Order History',
-        'subtitle': 'Review previous orders',
-      },
-      {
         'icon': Icons.lock_outline,
         'title': 'Security',
         'subtitle': 'Password',
@@ -82,14 +77,35 @@ class ProfilePage extends StatelessWidget {
                         )),
                     const SizedBox(height: 24),
                     _LogoutButton(
-                      onTap: () {
-                        // Save cart before logout
-                        final cartProvider = context.read<CartProvider>();
-                        if (authProvider.userId != null) {
-                          cartProvider.saveCartToDatabase(authProvider.userId!);
+                      onTap: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            title: const Text('Log out'),
+                            content: const Text('Are you sure you want to log out?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF6B35)),
+                                child: const Text('Log out', style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirm == true) {
+                          // Save cart before logout
+                          final cartProvider = context.read<CartProvider>();
+                          if (authProvider.userId != null) {
+                            cartProvider.saveCartToDatabase(authProvider.userId!);
+                          }
+                          authProvider.logout();
+                          context.go('/welcome');
                         }
-                        authProvider.logout();
-                        context.go('/welcome');
                       },
                     ),
                     const SizedBox(height: 16),
@@ -119,7 +135,13 @@ class ProfilePage extends StatelessWidget {
         children: [
           // Back button
           GestureDetector(
-            onTap: () => context.pop(),
+            onTap: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/home');
+              }
+            },
             child: const Padding(
               padding: EdgeInsets.only(bottom: 8.0),
               child: Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35), size: 20),

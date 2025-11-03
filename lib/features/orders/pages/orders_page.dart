@@ -110,7 +110,13 @@ class _OrdersPageState extends State<OrdersPage> {
                 children: [
                   // Back button
                   GestureDetector(
-                    onTap: () => context.go('/home'),
+                    onTap: () {
+                      if (context.canPop()) {
+                        context.pop(); // preserves native back animation (left -> right)
+                      } else {
+                        context.go('/profile');
+                      }
+                    },
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35)),
@@ -391,28 +397,61 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
           const SizedBox(height: 8),
           
-          // Date and Time (Bottom Left) and Number of Items (Bottom Right)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Date and Time
-              Text(
-                dateFormat.format(order.orderDate),
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF7A7A7A),
+          // Date and Time (ordered + cancel/completed) and Number of Items
+          if (order.status.toLowerCase() == 'cancelled' || order.status.toLowerCase() == 'completed') ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Ordered: ' + dateFormat.format(order.orderDate),
+                        style: const TextStyle(fontSize: 13, color: Color(0xFF7A7A7A)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          (order.status.toLowerCase() == 'cancelled'
+                                  ? 'Cancelled: '
+                                  : 'Completed: ') +
+                              dateFormat.format((order.deliveryDate ?? order.orderDate)),
+                          style: const TextStyle(fontSize: 13, color: Color(0xFF7A7A7A)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // Number of Items
-              Text(
-                '$totalItems ${totalItems == 1 ? 'item' : 'items'}',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF7A7A7A),
+                Text(
+                  '$totalItems ${totalItems == 1 ? 'item' : 'items'}',
+                  style: const TextStyle(fontSize: 13, color: Color(0xFF7A7A7A)),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ] else ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Date and Time
+                Text(
+                  dateFormat.format(order.orderDate),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF7A7A7A),
+                  ),
+                ),
+                // Number of Items
+                Text(
+                  '$totalItems ${totalItems == 1 ? 'item' : 'items'}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF7A7A7A),
+                  ),
+                ),
+              ],
+            ),
+          ],
           
           // Address
           FutureBuilder<AddressModel?>(

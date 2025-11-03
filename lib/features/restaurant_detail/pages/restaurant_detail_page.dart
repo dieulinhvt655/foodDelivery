@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/restaurants_model.dart';
 import '../../../core/models/food_model.dart';
-import '../widgets/food_detail_popup.dart';
+// Removed popup usage; navigate to FoodDetailPage route instead
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
@@ -64,15 +65,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   }
 
   void _showFoodDetail(FoodModel food) {
-    if (_restaurant == null) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => FoodDetailPopup(
-        food: food,
-        restaurant: _restaurant!,
-      ),
-    );
+    context.push('/food/${food.id}?rid=${_restaurant?.id ?? ''}');
   }
 
   @override

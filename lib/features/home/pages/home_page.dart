@@ -19,6 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedCategoryIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
 
   final List<Map<String, String>> categories = [
     {'title': 'Snacks', 'icon': 'assets/icons/chip-home/Snacks.svg'},
@@ -46,6 +48,22 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeProvider>().loadRestaurants();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _performSearch(String q) async {
+    final keyword = q.trim();
+    if (keyword.isEmpty) return;
+    final encoded = Uri.encodeComponent(keyword);
+    if (!mounted) return;
+    _searchFocus.unfocus();
+    context.push('/search?q=' + encoded);
   }
 
   @override
@@ -82,6 +100,8 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                               child: TextField(
+                                controller: _searchController,
+                                focusNode: _searchFocus,
                                 decoration: InputDecoration(
                                   hintText: 'Search',
                                   hintStyle: const TextStyle(
@@ -103,14 +123,13 @@ class _HomePageState extends State<HomePage> {
                                         color: Color(0xFFFF6B35),
                                       ),
                                     ),
-                                    //Điều hướng sang trang lọc
                                     onTap: () {
                                       Navigator.push(
-                                      context,
+                                        context,
                                         MaterialPageRoute(
                                           builder: (context) => const CategoryFilterPage(
                                             category: 'Snacks',
-                                          )
+                                          ),
                                         ),
                                       );
                                     },
@@ -125,6 +144,7 @@ class _HomePageState extends State<HomePage> {
                                   fontSize: 16,
                                   color: Color(0xFF2D2D2D),
                                 ),
+                                onSubmitted: _performSearch,
                               ),
                             ),
                           ),
@@ -198,6 +218,7 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 20),
 
+              // Dynamic suggestions
               // Cart notification banner
               Consumer<CartProvider>(
                 builder: (context, cartProvider, child) {

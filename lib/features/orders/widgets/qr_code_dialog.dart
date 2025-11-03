@@ -6,12 +6,14 @@ class QRCodeDialog extends StatefulWidget {
   final double orderTotal;
   final String orderId;
   final VoidCallback? onPaymentSuccess;
+  final String? orderCode;
 
   const QRCodeDialog({
     super.key,
     required this.orderTotal,
     required this.orderId,
     this.onPaymentSuccess,
+    this.orderCode,
   });
 
   @override
@@ -22,6 +24,12 @@ class _QRCodeDialogState extends State<QRCodeDialog> {
   int _remainingSeconds = 300; // 5 minutes = 300 seconds
   Timer? _timer;
   bool _isExpired = false;
+
+  String _two(int n) => n.toString().padLeft(2, '0');
+  String _formatExpiryDate() {
+    final dt = DateTime.now().add(Duration(seconds: _remainingSeconds));
+    return '${_two(dt.day)}/${_two(dt.month)}/${dt.year}';
+  }
 
   @override
   void initState() {
@@ -122,6 +130,7 @@ class _QRCodeDialogState extends State<QRCodeDialog> {
               ],
             ),
             const SizedBox(height: 24),
+            // Order code moved below QR
             // QR Code
             Container(
               padding: const EdgeInsets.all(20),
@@ -171,7 +180,17 @@ class _QRCodeDialogState extends State<QRCodeDialog> {
                       errorCorrectionLevel: QrErrorCorrectLevel.M,
                     ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
+            if (widget.orderCode != null)
+              Text(
+                'Order Code: ${widget.orderCode!}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2D2D2D),
+                ),
+              ),
+            const SizedBox(height: 12),
             // Timer
             if (!_isExpired)
               Container(
@@ -201,31 +220,69 @@ class _QRCodeDialogState extends State<QRCodeDialog> {
                 ),
               ),
             const SizedBox(height: 20),
-            // Order Total
+            // Info card with Order Code + Amount + To + Expiry (English)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF4E3),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  const Text(
-                    'Order Total',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF2D2D2D),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Order Code',
+                        style: TextStyle(fontSize: 14, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        widget.orderCode ?? '-',
+                        style: const TextStyle(fontSize: 16, color: Color(0xFFFF6B35), fontWeight: FontWeight.w700),
+                      ),
+                    ],
                   ),
-                  Text(
-                    '\$${widget.orderTotal.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFFFF6B35),
-                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Amount',
+                        style: TextStyle(fontSize: 14, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        '\${widget.orderTotal.toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 16, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'To',
+                        style: TextStyle(fontSize: 14, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        'Yummy',
+                        style: TextStyle(fontSize: 16, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Expires on',
+                        style: TextStyle(fontSize: 14, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        _formatExpiryDate(),
+                        style: const TextStyle(fontSize: 16, color: Color(0xFF2D2D2D), fontWeight: FontWeight.w700),
+                      ),
+                    ],
                   ),
                 ],
               ),

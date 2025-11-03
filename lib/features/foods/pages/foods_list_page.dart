@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
 import '../../../core/models/restaurants_model.dart';
@@ -152,7 +153,18 @@ class _FoodsListPageState extends State<FoodsListPage> {
   }
 
   Widget _buildFoodCard(FoodModel food) {
-    return Container(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          final rid = _restaurantsByFood[food.id]?.isNotEmpty == true
+              ? _restaurantsByFood[food.id]!.first.id
+              : null;
+          final q = rid != null ? '?rid=' + rid : '';
+          context.push('/food/' + food.id + q);
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -306,7 +318,9 @@ class _FoodsListPageState extends State<FoodsListPage> {
           ),
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 }
 
