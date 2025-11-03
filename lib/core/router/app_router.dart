@@ -20,6 +20,9 @@ import '../../features/restaurants/pages/restaurants_list_page.dart';
 // import '../../features/favorites/pages/favorites_page.dart';
 import '../../features/orders/pages/confirm_order_page.dart';
 import '../../features/orders/pages/order_confirmed_page.dart';
+import '../../features/orders/pages/qr_payment_page.dart';
+import '../../features/foods/pages/search_results_page.dart';
+import '../../features/foods/pages/food_detail_page.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -106,6 +109,15 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/qr-payment',
+        builder: (context, state) {
+          final amountStr = state.uri.queryParameters['amount'] ?? '0';
+          final orderCode = state.uri.queryParameters['orderCode'] ?? '#UNKNOWN';
+          final amount = double.tryParse(amountStr) ?? 0.0;
+          return QrPaymentPage(amount: amount, orderCode: orderCode);
+        },
+      ),
+      GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationsPage(),
       ),
@@ -123,6 +135,21 @@ class AppRouter {
       GoRoute(
         path: '/restaurants',
         builder: (context, state) => const RestaurantsListPage(),
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (context, state) {
+          final q = state.uri.queryParameters['q'] ?? '';
+          return SearchResultsPage(initialQuery: q);
+        },
+      ),
+      GoRoute(
+        path: '/food/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final rid = state.uri.queryParameters['rid'];
+          return FoodDetailPage(foodId: id, restaurantId: rid);
+        },
       ),
       GoRoute(
         path: '/favorites',

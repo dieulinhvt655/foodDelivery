@@ -131,6 +131,24 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
     
     // Use the order code generated in initState or generate a new one
     final orderCode = _orderCode ?? await _generateUniqueOrderCode();
+
+    // If QR payment selected, navigate to QR payment page and handle expiry; do not place order yet
+    if (_selectedPaymentMethod == 'qr') {
+      final result = await context.push('/qr-payment?amount=${total.toStringAsFixed(2)}&orderCode=$orderCode');
+      if (!mounted) return;
+      if (result == 'expired') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('QR code expired. Please choose your payment method again.'),
+            backgroundColor: Color(0xFFFF6B35),
+          ),
+        );
+        setState(() {
+          _selectedPaymentMethod = null;
+        });
+      }
+      return;
+    }
     
     // Create order
     final orderId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -189,15 +207,13 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
       cartProvider.clearCart();
       context.go('/order-confirmed?deliveryDate=${deliveryDate.toIso8601String()}');
     } else {
-      // Other payment methods - show snackbar and go to orders
+      // Other non-QR methods (e.g., linked wallets) not implemented: prompt selection again
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Order placed successfully using $_selectedPaymentMethod!'),
-          backgroundColor: const Color(0xFFFF6B35),
+        const SnackBar(
+          content: Text('This payment method is not available. Please choose another.'),
+          backgroundColor: Color(0xFFFF6B35),
         ),
       );
-      cartProvider.clearCart();
-      context.go('/orders');
     }
   }
 

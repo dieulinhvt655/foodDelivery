@@ -52,109 +52,93 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _loadRestaurants,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFB800),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(32),
-                      bottomRight: Radius.circular(32),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Container(
-                            width: 44,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35), size: 20),
-                          ),
-                        ),
-                        const Expanded(
-                          child: Text(
-                            'Restaurants',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 48),
-                      ],
-                    ),
-                  ),
+        child: Column(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFB800),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
                 ),
               ),
-              if (_isLoading)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (_error != null)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text('Error: $_error', style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        ElevatedButton(onPressed: _loadRestaurants, child: const Text('Retry')),
-                      ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                  ),
-                )
-              else if (_restaurants.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.restaurant, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text('No restaurants available', style: TextStyle(color: Colors.grey, fontSize: 16)),
-                      ],
+                    const Expanded(
+                      child: Text(
+                        'Restaurants',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final restaurant = _restaurants[index];
-                        return _buildRestaurantCard(restaurant);
-                      },
-                      childCount: _restaurants.length,
-                    ),
-                  ),
+                    const SizedBox(width: 48),
+                  ],
                 ),
-            ],
-          ),
+              ),
+            ),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error != null
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Error: $_error',
+                                style: const TextStyle(color: Colors.red),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _loadRestaurants,
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : _restaurants.isEmpty
+                          ? const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.restaurant, size: 64, color: Colors.grey),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'No restaurants available',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: _loadRestaurants,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _restaurants.length,
+                                itemBuilder: (context, index) {
+                                  final restaurant = _restaurants[index];
+                                  return _buildRestaurantCard(restaurant);
+                                },
+                              ),
+                            ),
+            ),
+          ],
         ),
       ),
     );
@@ -182,7 +166,6 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Restaurant Image
               Container(
                 height: 180,
                 width: double.infinity,
@@ -210,7 +193,6 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                         ),
                 ),
               ),
-              // Restaurant Info
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -232,25 +214,18 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: restaurant.isOpen
-                                ? Colors.green[100]
-                                : Colors.red[100],
+                            color: restaurant.isOpen ? Colors.green[100] : Colors.red[100],
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                restaurant.isOpen
-                                    ? Icons.check_circle
-                                    : Icons.cancel,
+                                restaurant.isOpen ? Icons.check_circle : Icons.cancel,
                                 size: 14,
-                                color: restaurant.isOpen
-                                    ? Colors.green
-                                    : Colors.red,
+                                color: restaurant.isOpen ? Colors.green : Colors.red,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -258,9 +233,7 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: restaurant.isOpen
-                                      ? Colors.green
-                                      : Colors.red,
+                                  color: restaurant.isOpen ? Colors.green : Colors.red,
                                 ),
                               ),
                             ],
@@ -273,8 +246,7 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on,
-                              size: 16, color: Colors.grey[600]),
+                          Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
@@ -295,8 +267,7 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.star,
-                                size: 18, color: Color(0xFFFFB800)),
+                            const Icon(Icons.star, size: 18, color: Color(0xFFFFB800)),
                             const SizedBox(width: 4),
                             Text(
                               '${restaurant.rating}.0',
@@ -311,8 +282,7 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                           const SizedBox(width: 16),
                           Row(
                             children: [
-                              Icon(Icons.phone,
-                                  size: 16, color: Colors.grey[600]),
+                              Icon(Icons.phone, size: 16, color: Colors.grey[600]),
                               const SizedBox(width: 4),
                               Text(
                                 restaurant.phone!,

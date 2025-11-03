@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/favorites_provider.dart';
 import '../../restaurant_detail/widgets/food_detail_popup.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
 import '../../../core/models/restaurants_model.dart';
@@ -69,7 +70,7 @@ class _FoodsListPageState extends State<FoodsListPage> {
         final restaurantsByFood = await _dbHelper.getAllRestaurantsByFoods();
         _restaurantsByFood = restaurantsByFood;
       }
-      
+
       // Lọc theo favorites nếu cần
       if (widget.showFavoritesOnly) {
         final favs = context.read<FavoritesProvider>();
@@ -83,6 +84,7 @@ class _FoodsListPageState extends State<FoodsListPage> {
       if (!mounted) return;
       setState(() {
         _foods = foods;
+        _restaurantsByFood = restaurantsByFood;
       });
     } catch (e) {
       if (!mounted) return;
@@ -226,7 +228,18 @@ class _FoodsListPageState extends State<FoodsListPage> {
   }
 
   Widget _buildFoodCard(FoodModel food) {
-    return Container(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          final rid = _restaurantsByFood[food.id]?.isNotEmpty == true
+              ? _restaurantsByFood[food.id]!.first.id
+              : null;
+          final q = rid != null ? '?rid=' + rid : '';
+          context.push('/food/' + food.id + q);
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -400,7 +413,9 @@ class _FoodsListPageState extends State<FoodsListPage> {
           ),
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 }
 

@@ -1450,13 +1450,16 @@ class FoodDatabaseHelper {
     }).toList();
   }
 
-  // Search foods by name
+  // Search foods by name/description (case-insensitive)
   Future<List<FoodModel>> searchFoods(String query) async {
     final db = await database;
+    final q = query.trim();
+    if (q.isEmpty) return [];
+    final like = '%${q.replaceAll('%', '\\%').replaceAll('_', '\\_')}%';
     final result = await db.query(
       'foods',
-      where: 'name LIKE ? OR description LIKE ?',
-      whereArgs: ['%$query%', '%$query%'],
+      where: 'LOWER(name) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?)',
+      whereArgs: [like, like],
       orderBy: 'name ASC',
     );
     return result.map((map) => FoodModel.fromMap(map)).toList();
@@ -1679,4 +1682,3 @@ class FoodDatabaseHelper {
     await database;
   }
 }
-
