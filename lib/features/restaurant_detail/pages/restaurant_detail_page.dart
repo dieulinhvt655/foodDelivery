@@ -162,7 +162,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                                     const Icon(Icons.star, size: 20, color: Color(0xFFFFB800)),
                                     const SizedBox(width: 4),
                                     Text(
-                                      '${_restaurant!.rating}.0',
+                                      _restaurant!.rating.toStringAsFixed(1),
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,

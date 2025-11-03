@@ -8,7 +8,6 @@ class FoodModel {
   final int rating;
   final bool isAvailable;
   final int? preparationTime;
-  final String? restaurantId;
 
   FoodModel({
     required this.id,
@@ -20,7 +19,6 @@ class FoodModel {
     required this.rating,
     required this.isAvailable,
     this.preparationTime,
-    this.restaurantId,
   });
 
   // Convert FoodModel to Map
@@ -35,7 +33,6 @@ class FoodModel {
       'rating': rating,
       'isAvailable': isAvailable ? 1 : 0,
       'preparationTime': preparationTime,
-      'restaurantId': restaurantId,
     };
   }
 
@@ -48,10 +45,9 @@ class FoodModel {
       price: (map['price'] ?? 0.0).toDouble(),
       image: map['image'] ?? '',
       categoryId: map['categoryId'] ?? '',
-      rating: map['rating'] ?? 0,
+      rating: (map['rating'] ?? 0).toInt(),
       isAvailable: (map['isAvailable'] ?? 0) == 1,
       preparationTime: map['preparationTime'],
-      restaurantId: map['restaurantId'],
     );
   }
 
@@ -70,8 +66,7 @@ class FoodModel {
     String? categoryId,
     int? rating,
     bool? isAvailable,
-    int? preparationTime,
-    String? restaurantId,
+    int? preparationTime
   }) {
     return FoodModel(
       id: id ?? this.id,
@@ -83,7 +78,6 @@ class FoodModel {
       rating: rating ?? this.rating,
       isAvailable: isAvailable ?? this.isAvailable,
       preparationTime: preparationTime ?? this.preparationTime,
-      restaurantId: restaurantId ?? this.restaurantId,
     );
   }
 

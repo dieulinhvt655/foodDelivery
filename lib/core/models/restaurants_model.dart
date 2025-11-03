@@ -4,7 +4,7 @@ class RestaurantModel {
   final String? address;
   final String? phone;
   final String image;
-  final int rating;
+  final double rating;
   final bool isOpen;
 
   RestaurantModel({
@@ -38,7 +38,7 @@ class RestaurantModel {
       address: map['address'],
       phone: map['phone'],
       image: map['image'] ?? '',
-      rating: map['rating'] ?? 0,
+      rating: (map['rating'] ?? 0.0).toDouble(),
       isOpen: (map['is_open'] ?? 1) == 1,
     );
   }
@@ -55,7 +55,7 @@ class RestaurantModel {
     String? address,
     String? phone,
     String? image,
-    int? rating,
+    double? rating,
     bool? isOpen,
   }) {
     return RestaurantModel(
