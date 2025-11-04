@@ -226,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                   if (cartProvider.isEmpty) {
                     return const SizedBox.shrink();
                   }
-                  
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: GestureDetector(
@@ -442,7 +442,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
 
               // Promo banner
-              const PromoBanner(),
+              PromoBanner(),
 
               const SizedBox(height: 24),
 

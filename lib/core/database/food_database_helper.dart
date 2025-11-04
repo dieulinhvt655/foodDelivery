@@ -221,6 +221,7 @@ class FoodDatabaseHelper {
       'isAvailable': 1,
       'preparationTime': 7,
     });
+
     await db.insert('foods', {
       'id': 'food_3',
       'name': 'Nachos with Cheese',
@@ -243,6 +244,7 @@ class FoodDatabaseHelper {
       'isAvailable': 1,
       'preparationTime': 5,
     });
+    
     await db.insert('foods', {
       'id': 'food_5',
       'name': 'Potato Chips',
