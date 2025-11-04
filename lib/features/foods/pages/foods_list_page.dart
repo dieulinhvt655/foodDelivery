@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
 import '../../../core/models/restaurants_model.dart';
+import '../../common/widgets/custom_bottom_nav_bar.dart';
 
 class FoodsListPage extends StatefulWidget {
   final bool showFavoritesOnly;
@@ -58,17 +59,17 @@ class _FoodsListPageState extends State<FoodsListPage> {
 
     try {
       List<FoodModel> foods;
+      Map<String, List<RestaurantModel>> restaurantsByFood = {};
       
       // Truy vấn theo categoryId nếu có
       if (widget.categoryId != null && widget.categoryId!.isNotEmpty) {
         foods = await _dbHelper.getFoodsByCategoryId(widget.categoryId!);
         // Không load restaurants khi lọc theo category
-        _restaurantsByFood = {};
+        restaurantsByFood = {};
       } else {
         foods = await _dbHelper.getAllFoods();
         // Load restaurants chỉ khi không lọc theo category
-        final restaurantsByFood = await _dbHelper.getAllRestaurantsByFoods();
-        _restaurantsByFood = restaurantsByFood;
+        restaurantsByFood = await _dbHelper.getAllRestaurantsByFoods();
       }
 
       // Lọc theo favorites nếu cần
@@ -78,9 +79,9 @@ class _FoodsListPageState extends State<FoodsListPage> {
         final favIds = favs.favoriteFoodIds;
         foods = foods.where((f) => favIds.contains(f.id)).toList();
         // Không load restaurants khi hiển thị favorites
-        _restaurantsByFood = {};
+        restaurantsByFood = {};
       }
-      
+
       if (!mounted) return;
       setState(() {
         _foods = foods;
@@ -123,7 +124,7 @@ class _FoodsListPageState extends State<FoodsListPage> {
                     child: Row(
                       children: [
                         GestureDetector(
-                          onTap: () => Navigator.pop(context),
+                          onTap: () => context.go('/home'),
                           child: Container(
                             width: 44,
                             height: 60,
@@ -224,6 +225,9 @@ class _FoodsListPageState extends State<FoodsListPage> {
           ),
         ),
       ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: widget.showFavoritesOnly ? 2 : 3,
+      ),
     );
   }
 
@@ -272,15 +276,18 @@ class _FoodsListPageState extends State<FoodsListPage> {
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
               ),
-              child: food.image.startsWith('http')
-                  ? Image.network(food.image, fit: BoxFit.cover)
-                  : Image.asset(
-                      food.image,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.restaurant, size: 50, color: Colors.grey);
-                      },
+              child: Image.asset(
+                food.image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: Icon(Icons.restaurant, size: 50, color: Colors.grey),
                     ),
+                  );
+                },
+              ),
             ),
           ),
           // Food Info
@@ -361,22 +368,26 @@ class _FoodsListPageState extends State<FoodsListPage> {
                         ),
                       ),
                       const Spacer(),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        onPressed: food.isAvailable ? () => _showAddToCartPopup(food) : null,
-                        icon: const Icon(Icons.add_shopping_cart, color: Color(0xFFFF6B35), size: 20),
+                      GestureDetector(
+                        onTap: food.isAvailable ? () => _showAddToCartPopup(food) : null,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: const Icon(Icons.add_shopping_cart, color: Color(0xFFFF6B35), size: 20),
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Consumer<FavoritesProvider>(
                         builder: (context, favs, _) {
                           final isFav = favs.isFavorite(food.id);
-                          return IconButton(
-                            visualDensity: VisualDensity.compact,
-                            onPressed: () => favs.toggleFavorite(food.id),
-                            icon: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? const Color(0xFFFF6B35) : Colors.grey[500],
-                              size: 20,
+                          return GestureDetector(
+                            onTap: () => favs.toggleFavorite(food.id),
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: isFav ? const Color(0xFFFF6B35) : Colors.grey[500],
+                                size: 20,
+                              ),
                             ),
                           );
                         },

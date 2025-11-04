@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/restaurants_model.dart';
+import '../../common/widgets/custom_bottom_nav_bar.dart';
 
 class RestaurantsListPage extends StatefulWidget {
   const RestaurantsListPage({super.key});
@@ -68,7 +70,7 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.go('/home'),
                     ),
                     const Expanded(
                       child: Text(
@@ -141,6 +143,7 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
           ],
         ),
       ),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
     );
   }
 
@@ -163,6 +166,9 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            context.push('/restaurant/${restaurant.id}');
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

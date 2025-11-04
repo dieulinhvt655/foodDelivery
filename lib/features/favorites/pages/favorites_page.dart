@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/providers/favorites_provider.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
+import '../../common/widgets/custom_bottom_nav_bar.dart';
 
 
 class FavoritesPage extends StatefulWidget {
@@ -47,6 +49,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   itemBuilder: (ctx, i) {
                     final food = _foods[i];
                     return ListTile(
+                      onTap: () {
+                        context.push('/food/${food.id}');
+                      },
                       leading: food.image.startsWith('http')
                           ? Image.network(food.image, width: 48, height: 48, fit: BoxFit.cover)
                           : Image.asset(food.image, width: 48, height: 48, fit: BoxFit.cover),
@@ -66,6 +71,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemCount: _foods.length,
                 ),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
     );
   }
 }

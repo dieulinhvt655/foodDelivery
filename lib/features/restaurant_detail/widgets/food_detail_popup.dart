@@ -79,19 +79,22 @@ class _FoodDetailPopupState extends State<FoodDetailPopup> {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                     ),
-                    child: widget.food.image.startsWith('http')
-                        ? Image.network(widget.food.image, fit: BoxFit.cover)
-                        : Image.asset(
-                            widget.food.image,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.restaurant,
-                                size: 80,
-                                color: Colors.grey,
-                              );
-                            },
+                    child: Image.asset(
+                      widget.food.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(
+                              Icons.restaurant,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
                           ),
+                        );
+                      },
+                    ),
                   ),
                 ),
                 // Close Button

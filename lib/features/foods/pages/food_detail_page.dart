@@ -65,11 +65,7 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
       restaurantName: _restaurant?.name ?? '',
     );
     cart.addToCart(item);
-    // If this page was opened from a restaurant context, go straight to confirm order
-    if (widget.restaurantId != null && widget.restaurantId!.isNotEmpty) {
-      context.push('/confirm-order');
-      return;
-    }
+    // Hiển thị thông báo đã thêm vào giỏ
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Added to cart')),
     );
@@ -118,11 +114,22 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 1. Ảnh đồ ăn
+                      // 1. Ảnh đồ ăn (hỗ trợ asset và network, fallback nếu lỗi)
                       if (_food!.image.isNotEmpty)
                         AspectRatio(
                           aspectRatio: 16 / 9,
-                          child: Image.asset(_food!.image, fit: BoxFit.cover),
+                          child: ClipRRect(
+                            child: Image.asset(
+                              _food!.image,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stack) => Container(
+                                color: const Color(0xFFF1F1F1),
+                                child: const Center(
+                                  child: Icon(Icons.restaurant, size: 56, color: Colors.grey),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       const SizedBox(height: 12),
                       Padding(

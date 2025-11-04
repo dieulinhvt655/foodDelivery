@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/cart_provider.dart';
+import '../../common/widgets/custom_bottom_nav_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -116,6 +117,7 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 4),
     );
   }
 
@@ -135,13 +137,7 @@ class ProfilePage extends StatelessWidget {
         children: [
           // Back button
           GestureDetector(
-            onTap: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.go('/home');
-              }
-            },
+            onTap: () => context.go('/home'),
             child: const Padding(
               padding: EdgeInsets.only(bottom: 8.0),
               child: Icon(Icons.arrow_back_ios_new, color: Color(0xFFFF6B35), size: 20),

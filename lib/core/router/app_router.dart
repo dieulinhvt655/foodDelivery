@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/onboarding/pages/onboarding_page.dart';
 import '../../features/home/pages/home_page.dart';
@@ -24,6 +25,35 @@ import '../../features/orders/pages/qr_payment_page.dart';
 import '../../features/foods/pages/search_results_page.dart';
 import '../../features/foods/pages/food_detail_page.dart';
 
+// Fast transition với duration ngắn (150ms)
+Page<T> _fastTransition<T extends Object?>({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const duration = Duration(milliseconds: 150);
+      const curve = Curves.easeOut;
+      
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: curve,
+        ).drive(
+          Tween(begin: 0.0, end: 1.0).chain(
+            CurveTween(curve: curve),
+          ),
+        ),
+        child: child,
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 150),
+  );
+}
+
 class AppRouter {
   static final router = GoRouter(
     initialLocation: '/onboarding',
@@ -46,13 +76,21 @@ class AppRouter {
       ),
       GoRoute(
         path: '/home',
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => _fastTransition(
+          context: context,
+          state: state,
+          child: const HomePage(),
+        ),
       ),
       GoRoute(
         path: '/restaurant/:id',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
-          return RestaurantDetailPage(restaurantId: id);
+          return _fastTransition(
+            context: context,
+            state: state,
+            child: RestaurantDetailPage(restaurantId: id),
+          );
         },
       ),
       GoRoute(
@@ -61,7 +99,11 @@ class AppRouter {
       ),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfilePage(),
+        pageBuilder: (context, state) => _fastTransition(
+          context: context,
+          state: state,
+          child: const ProfilePage(),
+        ),
       ),
       GoRoute(
         path: '/profile/edit',
@@ -123,18 +165,26 @@ class AppRouter {
       ),
       GoRoute(
         path: '/foods',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final categoryId = state.uri.queryParameters['categoryId'];
           final showFavorites = state.uri.queryParameters['favorites'] == '1';
-          return FoodsListPage(
-            showFavoritesOnly: showFavorites,
-            categoryId: categoryId,
+          return _fastTransition(
+            context: context,
+            state: state,
+            child: FoodsListPage(
+              showFavoritesOnly: showFavorites,
+              categoryId: categoryId,
+            ),
           );
         },
       ),
       GoRoute(
         path: '/restaurants',
-        builder: (context, state) => const RestaurantsListPage(),
+        pageBuilder: (context, state) => _fastTransition(
+          context: context,
+          state: state,
+          child: const RestaurantsListPage(),
+        ),
       ),
       GoRoute(
         path: '/search',
@@ -145,15 +195,23 @@ class AppRouter {
       ),
       GoRoute(
         path: '/food/:id',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = state.pathParameters['id']!;
           final rid = state.uri.queryParameters['rid'];
-          return FoodDetailPage(foodId: id, restaurantId: rid);
+          return _fastTransition(
+            context: context,
+            state: state,
+            child: FoodDetailPage(foodId: id, restaurantId: rid),
+          );
         },
       ),
       GoRoute(
         path: '/favorites',
-        builder: (context, state) => const FoodsListPage(showFavoritesOnly: true),
+        pageBuilder: (context, state) => _fastTransition(
+          context: context,
+          state: state,
+          child: const FoodsListPage(showFavoritesOnly: true),
+        ),
       ),
     ],
   );

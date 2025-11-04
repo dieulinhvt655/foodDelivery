@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../../core/providers/favorites_provider.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/restaurants_model.dart';
 import '../../../core/models/food_model.dart';
@@ -309,6 +311,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
+          onTap: () => _showFoodDetail(food),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -324,18 +327,21 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: food.image.startsWith('http')
-                        ? Image.network(food.image, fit: BoxFit.cover)
-                        : Image.asset(
-                            food.image,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.restaurant,
-                                size: 40,
-                                color: Colors.grey,
-                              );
-                            },
+                    child: Image.asset(
+                      food.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(
+                              Icons.restaurant,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -412,6 +418,21 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                               fontWeight: FontWeight.bold,
                               color: Color(0xFFFF6B35),
                             ),
+                          ),
+                          const SizedBox(width: 4),
+                          Consumer<FavoritesProvider>(
+                            builder: (context, favs, _) {
+                              final isFav = favs.isFavorite(food.id);
+                              return IconButton(
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () => favs.toggleFavorite(food.id),
+                                icon: Icon(
+                                  isFav ? Icons.favorite : Icons.favorite_border,
+                                  color: isFav ? const Color(0xFFFF6B35) : Colors.grey[500],
+                                  size: 20,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
