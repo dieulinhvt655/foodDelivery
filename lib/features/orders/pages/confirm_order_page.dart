@@ -7,6 +7,7 @@ import '../../../core/models/cart_item_model.dart';
 import '../../../core/models/address_model.dart';
 import '../../../core/database/address_database_helper.dart';
 import '../../../core/models/voucher_model.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/models/notification_model.dart';
 import '../../../core/database/order_database_helper.dart';
@@ -612,21 +613,48 @@ class _OrderItemTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Food Image
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.orange.shade100,
-                  Colors.orange.shade200,
-                ],
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 80,
+              height: 80,
+              child: () {
+                final img = item.foodImage;
+                if (img.startsWith('http')) {
+                  return Image.network(
+                    img,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stack) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.orange.shade100, Colors.orange.shade200],
+                        ),
+                      ),
+                      child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35), size: 40),
+                    ),
+                  );
+                }
+                if (img.toLowerCase().endsWith('.svg')) {
+                  return SvgPicture.asset(img, fit: BoxFit.cover);
+                }
+                return Image.asset(
+                  img,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.orange.shade100, Colors.orange.shade200],
+                      ),
+                    ),
+                    child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35), size: 40),
+                  ),
+                );
+              }(),
             ),
-            child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35), size: 40),
           ),
           const SizedBox(width: 12),
           // Food Info
