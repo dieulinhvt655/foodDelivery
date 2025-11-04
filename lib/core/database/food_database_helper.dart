@@ -1467,6 +1467,74 @@ class FoodDatabaseHelper {
     return result.map((map) => FoodModel.fromMap(map)).toList();
   }
 
+  /// Filter foods by multiple criteria with AND logic across groups
+  /// - categoryName: one of snacks, meal, vegan, dessert, drink (case-insensitive)
+  /// - nameOptions: set of keywords like Bruschetta, Spring Rolls, ... (OR within the set)
+  /// - minRating: minimum integer rating
+  /// - priceMin/priceMax: inclusive price range
+  Future<List<FoodModel>> filterFoods({
+    String? categoryName,
+    Set<String>? nameOptions,
+    int? minRating,
+    double? priceMin,
+    double? priceMax,
+  }) async {
+    final db = await database;
+
+    final whereClauses = <String>[];
+    final whereArgs = <Object?>[];
+
+    // Join with categories when needed to match by human-readable category
+    final joinCategory = categoryName != null && categoryName.trim().isNotEmpty;
+
+    if (joinCategory) {
+      whereClauses.add('LOWER(c.name) = LOWER(?)');
+      whereArgs.add(categoryName!.trim());
+    }
+
+    if (minRating != null && minRating > 0) {
+      whereClauses.add('f.rating >= ?');
+      whereArgs.add(minRating);
+    }
+
+    if (priceMin != null && priceMax != null) {
+      whereClauses.add('f.price BETWEEN ? AND ?');
+      whereArgs.add(priceMin);
+      whereArgs.add(priceMax);
+    } else if (priceMin != null) {
+      whereClauses.add('f.price >= ?');
+      whereArgs.add(priceMin);
+    } else if (priceMax != null) {
+      whereClauses.add('f.price <= ?');
+      whereArgs.add(priceMax);
+    }
+
+    // Only list available foods
+    whereClauses.add('f.isAvailable = 1');
+
+    // Name options (OR inside the group)
+    final options = nameOptions?.where((e) => e.trim().isNotEmpty).toList() ?? [];
+    if (options.isNotEmpty) {
+      final likeParts = <String>[];
+      for (final opt in options) {
+        likeParts.add('LOWER(f.name) LIKE LOWER(?)');
+        whereArgs.add('%${opt.replaceAll('%', '\\%').replaceAll('_', '\\_').trim()}%');
+      }
+      whereClauses.add('(' + likeParts.join(' OR ') + ')');
+    }
+
+    final whereSql = whereClauses.isEmpty ? '' : 'WHERE ' + whereClauses.join(' AND ');
+
+    final sql = StringBuffer()
+      ..writeln('SELECT f.* FROM foods f')
+      ..writeln(joinCategory ? 'INNER JOIN categories c ON c.id = f.categoryId' : '')
+      ..writeln(whereSql)
+      ..writeln('ORDER BY f.name ASC');
+
+    final rows = await db.rawQuery(sql.toString(), whereArgs);
+    return rows.map((map) => FoodModel.fromMap(map as Map<String, dynamic>)).toList();
+  }
+
   // Update food
   Future<int> updateFood(FoodModel food) async {
     final db = await database;

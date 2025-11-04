@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../foods/pages/filtered_foods_page.dart';
 
 class CategoryFilterResult {
   final String category;
@@ -71,12 +72,16 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
   }
 
   void _apply() {
-    Navigator.of(context).pop(
-      CategoryFilterResult(
-        category: _currentCategory,
-        options: _selected,
-        priceRange: _showPrice ? _price : null,
-        minRating: _minRating > 0 ? _minRating : null,
+    // Navigate directly to results so back returns here (Filter page)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FilteredFoodsPage(
+          category: _currentCategory,
+          options: _selected,
+          priceMin: _showPrice ? _price.start : null,
+          priceMax: _showPrice ? _price.end : null,
+          minRating: _minRating > 0 ? _minRating : null,
+        ),
       ),
     );
   }

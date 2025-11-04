@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/home_provider.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../filters/pages/category_filter_page.dart';
+import '../../foods/pages/filtered_foods_page.dart';
 import '../widgets/best_seller_card.dart';
 import '../widgets/promo_banner.dart';
 import '../widgets/recommend_card.dart';
@@ -124,8 +125,8 @@ class _HomePageState extends State<HomePage> {
                                         color: Color(0xFFFF6B35),
                                       ),
                                     ),
-                                    onTap: () {
-                                      Navigator.push(
+                                    onTap: () async {
+                                      final result = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => const CategoryFilterPage(
@@ -133,6 +134,21 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       );
+                                      if (result != null && mounted) {
+                                        // Navigate to filtered results page
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => FilteredFoodsPage(
+                                              category: result.category,
+                                              options: result.options,
+                                              priceMin: result.priceRange?.start,
+                                              priceMax: result.priceRange?.end,
+                                              minRating: result.minRating,
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     },
                                   ),
                                   border: InputBorder.none,
