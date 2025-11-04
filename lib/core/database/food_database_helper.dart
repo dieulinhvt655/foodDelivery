@@ -1179,6 +1179,210 @@ class FoodDatabaseHelper {
         'isAvailable': 1,
         'preparationTime': 8,
     });
+//F37
+await db.insert('restaurant_foods', {
+        'id': 'rf_71',
+        'restaurantId': 'rest_2',
+        'foodId': 'food_37',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F38
+    await db.insert('restaurant_foods', {
+        'id': 'rf_72',
+        'restaurantId': 'rest_2',
+        'foodId': 'food_38',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F39
+    await db.insert('restaurant_foods', {
+        'id': 'rf_73',
+        'restaurantId': 'rest_6',
+        'foodId': 'food_39',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    await db.insert('restaurant_foods', {
+        'id': 'rf_74',
+        'restaurantId': 'rest_2',
+        'foodId': 'food_39',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F40
+    await db.insert('restaurant_foods', {
+        'id': 'rf_75',
+        'restaurantId': 'rest_2',
+        'foodId': 'food_40',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F41
+    await db.insert('restaurant_foods', {
+        'id': 'rf_76',
+        'restaurantId': 'rest_8',
+        'foodId': 'food_41',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F42 
+    await db.insert('restaurant_foods', {
+        'id': 'rf_77',
+        'restaurantId': 'rest_7',
+        'foodId': 'food_42',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    }); 
+    //F43
+        await db.insert('restaurant_foods', {
+        'id': 'rf_78',
+        'restaurantId': 'rest_3',
+        'foodId': 'food_43',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F44
+    await db.insert('restaurant_foods', {
+        'id': 'rf_79',
+        'restaurantId': 'rest_3',
+        'foodId': 'food_44',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F45
+    await db.insert('restaurant_foods', {
+        'id': 'rf_80',
+        'restaurantId': 'rest_10',
+        'foodId': 'food_45',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F46
+    await db.insert('restaurant_foods', {
+        'id': 'rf_81',
+        'restaurantId': 'rest_10',
+        'foodId': 'food_46',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    await db.insert('restaurant_foods', {
+        'id': 'rf_82',
+        'restaurantId': 'rest_7',
+        'foodId': 'food_46',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F47
+    await db.insert('restaurant_foods', {
+        'id': 'rf_83',
+        'restaurantId': 'rest_5',
+        'foodId': 'food_47',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F48
+    await db.insert('restaurant_foods', {
+        'id': 'rf_84',
+        'restaurantId': 'rest_3',
+        'foodId': 'food_48',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F49
+    await db.insert('restaurant_foods', {
+        'id': 'rf_85',
+        'restaurantId': 'rest_4',
+        'foodId': 'food_49',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F50
+    await db.insert('restaurant_foods', {
+        'id': 'rf_86',
+        'restaurantId': 'rest_7',
+        'foodId': 'food_50',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F51
+    await db.insert('restaurant_foods', {
+        'id': 'rf_87',
+        'restaurantId': 'rest_7',
+        'foodId': 'food_51',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F52
+    await db.insert('restaurant_foods', {
+        'id': 'rf_88',
+        'restaurantId': 'rest_7',
+        'foodId': 'food_52',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    }); 
+    //F53
+    await db.insert('restaurant_foods', {
+        'id': 'rf_89',
+        'restaurantId': 'rest_10',
+        'foodId': 'food_53',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F54
+    await db.insert('restaurant_foods', {
+        'id': 'rf_90',
+        'restaurantId': 'rest_10',
+        'foodId': 'food_54',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F55
+    await db.insert('restaurant_foods', {
+        'id': 'rf_91',
+        'restaurantId': 'rest_10',
+        'foodId': 'food_55',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    //F56
+    await db.insert('restaurant_foods', {
+        'id': 'rf_92',
+        'restaurantId': 'rest_3',
+        'foodId': 'food_56',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
+    await db.insert('restaurant_foods', {
+        'id': 'rf_93',
+        'restaurantId': 'rest_3',
+        'foodId': 'food_57',
+        'price': 8.5,
+        'isAvailable': 1,
+        'preparationTime': 8,
+    });
 }
  
 

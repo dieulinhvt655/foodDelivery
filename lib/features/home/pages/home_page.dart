@@ -444,8 +444,12 @@ class _HomePageState extends State<HomePage> {
                         scrollDirection: Axis.horizontal,
                         itemCount: bestSellers.length,
                         itemBuilder: (context, index) {
+                          const assetImages = [
+                            'assets/images/dishes-square/beef_steak.jpg',
+                            'assets/images/dishes-square/iced_matcha_latte.jpg',
+                          ];
                           return BestSellerCard(
-                            imagePath: bestSellers[index]['image']!,
+                            imagePath: assetImages[index % assetImages.length],
                             price: bestSellers[index]['price']!,
                           );
                         },

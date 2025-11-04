@@ -3,6 +3,7 @@ import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String initialQuery;
@@ -134,18 +135,36 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                                 ),
                                 child: Row(
                                 children: [
-                                  Container(
-                                    width: 64,
-                                    height: 64,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      gradient: LinearGradient(
-                                        colors: [Colors.orange.shade100, Colors.orange.shade200],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      width: 64,
+                                      height: 64,
+                                      child: () {
+                                        final img = f.image;
+                                        if (img.startsWith('http')) {
+                                          return Image.network(
+                                            img,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stack) => Container(
+                                              color: const Color(0xFFFFF4E3),
+                                              child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
+                                            ),
+                                          );
+                                        }
+                                        if (img.toLowerCase().endsWith('.svg')) {
+                                          return SvgPicture.asset(img, fit: BoxFit.cover);
+                                        }
+                                        return Image.asset(
+                                          img,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stack) => Container(
+                                            color: const Color(0xFFFFF4E3),
+                                            child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
+                                          ),
+                                        );
+                                      }(),
                                     ),
-                                    child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(

@@ -187,12 +187,12 @@ class _RestaurantsListPageState extends State<RestaurantsListPage> {
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
                   ),
-                  child: restaurant.image.startsWith('http')
-                      ? Image.network(restaurant.image, fit: BoxFit.cover)
-                      : Image.asset(
+                  child: Image.asset(
                           restaurant.image,
+                        // 'assets/images/restaurants/kfc.jpg',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
+                            debugPrint('Asset not found: ${restaurant.image}');
                             return const Icon(Icons.restaurant,
                                 size: 80, color: Colors.grey);
                           },

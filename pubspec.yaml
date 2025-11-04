@@ -35,7 +35,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    #- assets/images/restaurants
+    - assets/images/restaurants/
     - assets/images/dishes-square/
     - assets/icons/
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/database/food_database_helper.dart';
 import '../../../core/models/food_model.dart';
@@ -32,20 +33,30 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
 
   Future<void> _load() async {
     final food = await _db.getFoodById(widget.foodId);
-    List<RestaurantModel> restaurants = [];
-    if (food != null) {
-      restaurants = await _db.getRestaurantsByFoodId(food.id);
-    }
+    RestaurantModel? restaurant;
     List<FoodModel> others = [];
-    if (restaurants.isNotEmpty) {
-      final rid = restaurants.first.id;
-      final list = await _db.getFoodsByRestaurantId(rid);
-      others = list.where((f) => f.id != widget.foodId).toList();
+
+    if (food != null) {
+      // Ưu tiên restaurantId truyền vào route; nếu không có thì lấy quán đầu tiên bán món này
+      String? rid = widget.restaurantId;
+      if (rid == null || rid.isEmpty) {
+        final restaurants = await _db.getRestaurantsByFoodId(food.id);
+        if (restaurants.isNotEmpty) {
+          rid = restaurants.first.id;
+        }
+      }
+
+      if (rid != null && rid.isNotEmpty) {
+        restaurant = await _db.getRestaurantById(rid);
+        final list = await _db.getFoodsByRestaurantId(rid);
+        others = list.where((f) => f.id != widget.foodId).toList();
+      }
     }
+
     if (!mounted) return;
     setState(() {
       _food = food;
-      _restaurant = restaurants.isNotEmpty ? restaurants.first : null;
+      _restaurant = restaurant;
       _otherFoodsSameRestaurant = others;
       _loading = false;
     });
@@ -119,16 +130,27 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                         AspectRatio(
                           aspectRatio: 16 / 9,
                           child: ClipRRect(
-                            child: Image.asset(
-                              _food!.image,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stack) => Container(
-                                color: const Color(0xFFF1F1F1),
-                                child: const Center(
-                                  child: Icon(Icons.restaurant, size: 56, color: Colors.grey),
-                                ),
-                              ),
-                            ),
+                            child: _food!.image.startsWith('http')
+                                ? Image.network(
+                                    _food!.image,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stack) => Container(
+                                      color: const Color(0xFFF1F1F1),
+                                      child: const Center(
+                                        child: Icon(Icons.restaurant, size: 56, color: Colors.grey),
+                                      ),
+                                    ),
+                                  )
+                                : Image.asset(
+                                    _food!.image,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stack) => Container(
+                                      color: const Color(0xFFF1F1F1),
+                                      child: const Center(
+                                        child: Icon(Icons.restaurant, size: 56, color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
                       const SizedBox(height: 12),
@@ -250,7 +272,9 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                                   final other = _otherFoodsSameRestaurant[index];
                                   return GestureDetector(
                                     onTap: () {
-                                      context.push('/food/${other.id}');
+                                      final rid = _restaurant?.id;
+                                      final q = (rid != null && rid.isNotEmpty) ? ('?rid=' + rid) : '';
+                                      context.push('/food/' + other.id + q);
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(12),
@@ -261,14 +285,39 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                                       ),
                                       child: Row(
                                         children: [
-                                          Container(
-                                            width: 64,
-                                            height: 64,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(8),
-                                              color: const Color(0xFFFFF4E3),
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: SizedBox(
+                                              width: 64,
+                                              height: 64,
+                                              child: () {
+                                                final img = other.image;
+                                                if (img.startsWith('http')) {
+                                                  return Image.network(
+                                                    img,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (context, error, stack) => Container(
+                                                      color: const Color(0xFFFFF4E3),
+                                                      child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
+                                                    ),
+                                                  );
+                                                }
+                                                if (img.toLowerCase().endsWith('.svg')) {
+                                                  return SvgPicture.asset(
+                                                    img,
+                                                    fit: BoxFit.cover,
+                                                  );
+                                                }
+                                                return Image.asset(
+                                                  img,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error, stack) => Container(
+                                                    color: const Color(0xFFFFF4E3),
+                                                    child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
+                                                  ),
+                                                );
+                                              }(),
                                             ),
-                                            child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35)),
                                           ),
                                           const SizedBox(width: 12),
                                           Expanded(

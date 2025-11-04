@@ -23,6 +23,7 @@ class _FoodsListPageState extends State<FoodsListPage> {
   List<FoodModel> _foods = [];
   Map<String, List<RestaurantModel>> _restaurantsByFood = {};
   String? _error;
+  String _priceSort = 'none'; // none | asc | desc
 
   void _showAddToCartPopup(FoodModel food) {
     final restaurants = _restaurantsByFood[food.id] ?? [];
@@ -87,6 +88,7 @@ class _FoodsListPageState extends State<FoodsListPage> {
         _foods = foods;
         _restaurantsByFood = restaurantsByFood;
       });
+      _applySort();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -99,6 +101,23 @@ class _FoodsListPageState extends State<FoodsListPage> {
         });
       }
     }
+  }
+
+  void _applySort() {
+    if (_foods.isEmpty) return;
+    setState(() {
+      if (_priceSort == 'asc') {
+        _foods.sort((a, b) {
+          final c = a.price.compareTo(b.price);
+          return c; // nếu bằng nhau giữ nguyên thứ tự hiện tại
+        });
+      } else if (_priceSort == 'desc') {
+        _foods.sort((a, b) {
+          final c = b.price.compareTo(a.price);
+          return c;
+        });
+      }
+    });
   }
 
   @override
@@ -170,6 +189,32 @@ class _FoodsListPageState extends State<FoodsListPage> {
                         const SizedBox(width: 48),
                       ],
                     ),
+                  ),
+                ),
+              ),
+              // Price sort control (back below header)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Text('Sort by price:', style: TextStyle(fontSize: 13, color: Color(0xFFFF6B35))),
+                      const SizedBox(width: 8),
+                      DropdownButton<String>(
+                        value: _priceSort,
+                        items: const [
+                          DropdownMenuItem(value: 'none', child: Text('Default',style: TextStyle(fontSize: 15))),
+                          DropdownMenuItem(value: 'asc', child: Text('Low → High',style: TextStyle(fontSize: 15))),
+                          DropdownMenuItem(value: 'desc', child: Text('High → Low',style: TextStyle(fontSize: 15))),
+                        ],
+                        onChanged: (val) {
+                          if (val == null) return;
+                          setState(() => _priceSort = val);
+                          _applySort();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -276,18 +321,15 @@ class _FoodsListPageState extends State<FoodsListPage> {
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
               ),
-              child: Image.asset(
-                food.image,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[200],
-                    child: const Center(
-                      child: Icon(Icons.restaurant, size: 50, color: Colors.grey),
+              child: food.image.startsWith('http')
+                  ? Image.network(food.image, fit: BoxFit.cover)
+                  : Image.asset(
+                      food.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.restaurant, size: 50, color: Colors.grey);
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
           // Food Info

@@ -5,6 +5,7 @@ import '../../../core/providers/cart_provider.dart';
 import '../../../core/models/cart_item_model.dart';
 import '../../../core/models/voucher_model.dart';
 import '../widgets/voucher_dialog.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -60,6 +61,7 @@ class CartPage extends StatelessWidget {
                                     subtitle: item.restaurantName,
                                     price: item.price,
                                     quantity: item.quantity,
+                                    imagePath: item.foodImage,
                                     onIncrement: () => _incrementQuantity(context, item),
                                     onDecrement: () => _decrementQuantity(context, item),
                                   ),
@@ -152,6 +154,7 @@ class _CartItemTile extends StatelessWidget {
     required this.subtitle,
     required this.price,
     required this.quantity,
+    required this.imagePath,
     required this.onIncrement,
     required this.onDecrement,
   });
@@ -160,6 +163,7 @@ class _CartItemTile extends StatelessWidget {
   final String subtitle;
   final double price;
   final int quantity;
+  final String imagePath;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
 
@@ -180,21 +184,48 @@ class _CartItemTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.orange.shade100,
-                  Colors.orange.shade200,
-                ],
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: SizedBox(
+              width: 72,
+              height: 72,
+              child: () {
+                final img = imagePath;
+                if (img.startsWith('http')) {
+                  return Image.network(
+                    img,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stack) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.orange.shade100, Colors.orange.shade200],
+                        ),
+                      ),
+                      child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35), size: 36),
+                    ),
+                  );
+                }
+                if (img.toLowerCase().endsWith('.svg')) {
+                  return SvgPicture.asset(img, fit: BoxFit.cover);
+                }
+                return Image.asset(
+                  img,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.orange.shade100, Colors.orange.shade200],
+                      ),
+                    ),
+                    child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35), size: 36),
+                  ),
+                );
+              }(),
             ),
-            child: const Icon(Icons.fastfood, color: Color(0xFFFF6B35), size: 36),
           ),
           const SizedBox(width: 16),
           Expanded(
