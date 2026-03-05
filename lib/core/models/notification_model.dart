@@ -19,6 +19,34 @@ class NotificationModel {
     required this.icon,
   });
 
+  /// JSON từ backend notification-service
+  factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    final metadata = json['metadata'] as Map<String, dynamic>?;
+    final eventType = metadata?['eventType'] as String?;
+
+    IconData pickIcon() {
+      if (eventType == null) return Icons.notifications_none_rounded;
+      if (eventType.startsWith('order.')) return Icons.receipt_long_outlined;
+      if (eventType == 'payment.success') return Icons.check_circle_outline;
+      if (eventType == 'promotion.new') return Icons.local_offer_outlined;
+      if (eventType == 'user.registered') return Icons.person_add_alt_1_outlined;
+      return Icons.notifications_none_rounded;
+    }
+
+    final created =
+        (json['created_at'] ?? json['createdAt'] ?? DateTime.now().toIso8601String()) as String;
+
+    return NotificationModel(
+      id: json['id'].toString(),
+      userId: (json['userId'] ?? json['user_id'] ?? '').toString(),
+      title: json['title'] ?? '',
+      message: json['content'] as String?,
+      createdAt: DateTime.parse(created),
+      isRead: json['isRead'] == true || json['is_read'] == true,
+      icon: pickIcon(),
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

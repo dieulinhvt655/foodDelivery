@@ -1,6 +1,7 @@
 class RestaurantModel {
   final String id;
   final String name;
+  final String? description;
   final String? address;
   final String? phone;
   final String image;
@@ -10,10 +11,11 @@ class RestaurantModel {
   RestaurantModel({
     required this.id,
     required this.name,
+    this.description,
     this.address,
     this.phone,
     required this.image,
-    required this.rating,
+    this.rating = 4.5,
     this.isOpen = true,
   });
 
@@ -22,6 +24,7 @@ class RestaurantModel {
     return {
       'id': id,
       'name': name,
+      'description': description,
       'address': address,
       'phone': phone,
       'image': image,
@@ -35,6 +38,7 @@ class RestaurantModel {
     return RestaurantModel(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
+      description: map['description'],
       address: map['address'],
       phone: map['phone'],
       image: map['image'] ?? '',
@@ -45,12 +49,25 @@ class RestaurantModel {
 
   // Create RestaurantModel from JSON (for API)
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
-    return RestaurantModel.fromMap(json);
+    final status = (json['status'] as String?) ?? 'OPEN';
+
+    return RestaurantModel(
+      id: (json['id'] ?? '').toString(),
+      name: json['name'] ?? '',
+      description: json['description'],
+      address: json['address'],
+      phone: json['phone'],
+      image: (json['imageUrl'] ?? json['image_url'] ?? json['image'] ?? '') as String,
+      // Backend hiện chưa có rating -> gán default, sau này có thể lấy từ service khác
+      rating: (json['rating'] ?? 4.5).toDouble(),
+      isOpen: status == 'OPEN',
+    );
   }
 
   // Copy with method for updating
   RestaurantModel copyWith({
     String? id,
+    String? description,
     String? name,
     String? address,
     String? phone,
@@ -61,6 +78,7 @@ class RestaurantModel {
     return RestaurantModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      description: description ?? this.description,
       address: address ?? this.address,
       phone: phone ?? this.phone,
       image: image ?? this.image,
@@ -74,4 +92,3 @@ class RestaurantModel {
     return 'RestaurantModel(id: $id, name: $name, address: $address, phone: $phone, rating: $rating, isOpen: $isOpen)';
   }
 }
-

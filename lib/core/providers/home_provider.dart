@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../features/home/models/restaurant_model.dart';
+import '../models/restaurants_model.dart';
 import '../../features/home/services/restaurant_service.dart';
 
 class HomeProvider extends ChangeNotifier {
